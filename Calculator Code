@@ -1,0 +1,2055 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bears TC Pace Calculator - V8.1 Advanced</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/phosphor-icons/1.4.2/css/phosphor.min.css" rel="stylesheet">
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.1/qrcode.min.js" defer></script>
+    <script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    
+    <style>
+        /* Isolate all styles to the calculator wrapper */
+        #pc-calculator-wrapper {
+            font-family: 'Inter', sans-serif;
+        }
+
+        #pc-calculator-wrapper ::-webkit-scrollbar { width: 8px; height: 8px; }
+        #pc-calculator-wrapper ::-webkit-scrollbar-track { background: #f1f5f9; }
+        #pc-calculator-wrapper .dark ::-webkit-scrollbar-track { background: #1e293b; }
+        #pc-calculator-wrapper ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+        #pc-calculator-wrapper .dark ::-webkit-scrollbar-thumb { background: #475569; }
+
+        #pc-calculator-wrapper input[type="radio"]:checked + label {
+            border-color: #4f46e5;
+            background-color: #eef2ff;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        #pc-calculator-wrapper .dark input[type="radio"]:checked + label {
+            border-color: #6366f1;
+            background-color: #312e81;
+        }
+
+        @keyframes pc-fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pc-fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-5px); }
+        }
+        .pc-fade-in { animation: pc-fadeIn 0.3s ease-out forwards; }
+        .pc-fade-out { animation: pc-fadeOut 0.2s ease-in forwards; }
+
+
+        #pc-calculator-wrapper .pc-sticky-header th { position: sticky; top: 0; z-index: 10; }
+        #pc-calculator-wrapper .pc-sticky-col { 
+            position: sticky; 
+            left: 0; 
+            z-index: 5; 
+            box-shadow: 4px 0 6px -4px rgba(0,0,0,0.1);
+        }
+        #pc-calculator-wrapper .dark .pc-sticky-col { box-shadow: 4px 0 6px -4px rgba(0,0,0,0.3); }
+
+        #pc-calculator-wrapper .pc-tab-btn { transition: all 0.3s ease; }
+        #pc-calculator-wrapper .pc-tab-btn.active { color: #4f46e5; border-bottom-color: #4f46e5; font-weight: 600; }
+        #pc-calculator-wrapper .dark .pc-tab-btn.active { color: #a5b4fc; border-bottom-color: #a5b4fc; }
+        #pc-calculator-wrapper .pc-tab-content { display: none; }
+        #pc-calculator-wrapper .pc-tab-content.active { display: block; }
+
+        #pc-calculator-wrapper .pc-modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background-color: rgba(15, 23, 42, 0.7);
+            z-index: 9999; /* High z-index for Squarespace */
+            animation: pc-fadeIn 0.3s ease-out;
+        }
+        #pc-calculator-wrapper .pc-modal-content {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000; /* High z-index for Squarespace */
+            max-height: 90vh; overflow-y: auto;
+        }
+        
+        #pc-calculator-wrapper .pc-chart-tooltip {
+            transition: opacity 0.2s ease-out;
+            pointer-events: none;
+        }
+        
+        /* Styles for the new time input fields */
+        #pc-calculator-wrapper .pc-time-input-group input {
+            text-align: center;
+            width: 3.5rem; /* Adjust width as needed */
+            -moz-appearance: textfield; /* Firefox */
+        }
+        #pc-calculator-wrapper .pc-time-input-group input::-webkit-outer-spin-button,
+        #pc-calculator-wrapper .pc-time-input-group input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        #pc-calculator-wrapper .pc-time-input-group input.border-red-500 {
+             border-color: #ef4444 !important;
+        }
+        
+        /* Larger, touch-friendly buttons */
+        #pc-calculator-wrapper button, #pc-calculator-wrapper a.button-like {
+            padding: 0.75rem 1.5rem; /* Equivalent to py-3 px-6 */
+            font-size: 1rem;
+            line-height: 1.5rem;
+        }
+
+        /* Enhancement 5: Sticky Header Navigation */
+        #pc-calculator-wrapper nav {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: inherit;
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            #pc-printable-area, #pc-printable-area * { visibility: visible; }
+            #pc-printable-area { position: absolute; left: 0; top: 0; width: 100%; }
+            .pc-no-print { display: none !important; }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 dark:bg-slate-900"> <!-- Body classes are for context, may be overridden by Squarespace -->
+
+<div id="pc-calculator-wrapper" class="text-slate-800 dark:text-slate-200 transition-colors duration-300">
+    <div id="toast-container" class="fixed top-5 right-5 z-50 space-y-2"></div>
+    <div id="sr-announcer" class="sr-only" aria-live="polite"></div>
+
+    <div class="w-full min-h-screen p-4 sm:p-6 lg:p-8">
+        <div class="max-w-screen-2xl mx-auto">
+            <header class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white">Pace Calculator</h1>
+                    <p class="text-slate-500 dark:text-slate-400">Bears TC Edition (V8.1-Advanced)</p>
+                </div>
+                <button id="darkToggle" aria-label="Toggle Dark Mode" class="relative w-12 h-6 bg-slate-300 dark:bg-slate-700 rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900">
+                    <span class="sr-only">Toggle Dark Mode</span>
+                    <span id="darkToggleIndicator" class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 flex items-center justify-center">
+                        <i class="ph-moon text-indigo-600"></i>
+                    </span>
+                </button>
+            </header>
+            
+            <div class="mb-6 border-b border-slate-200 dark:border-slate-700">
+                <nav class="flex space-x-6" aria-label="Tabs">
+                    <button id="tab-calc-btn" role="tab" aria-selected="true" aria-controls="tab-calc-content" class="pc-tab-btn active py-4 px-1 border-b-2 border-transparent text-lg font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300">
+                        <i class="ph-calculator mr-2"></i>Calculator
+                    </button>
+                    <button id="tab-history-btn" role="tab" aria-selected="false" aria-controls="tab-history-content" class="pc-tab-btn py-4 px-1 border-b-2 border-transparent text-lg font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300">
+                        <i class="ph-chart-line-up mr-2"></i>History
+                    </button>
+                    <button id="tab-settings-btn" role="tab" aria-selected="false" aria-controls="tab-settings-content" class="pc-tab-btn py-4 px-1 border-b-2 border-transparent text-lg font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300">
+                        <i class="ph-gear mr-2"></i>Settings
+                    </button>
+                </nav>
+            </div>
+
+            <div>
+                <div id="tab-calc-content" role="tabpanel" class="pc-tab-content active">
+                    <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                        
+                        <div class="lg:col-span-2 lg:col-start-1 lg:row-start-1 space-y-8">
+                            <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg">
+                                <div id="main-calc-form" class="space-y-6"></div>
+                            </div>
+                        </div>
+
+                        <div id="results-column" class="lg:col-span-3 lg:col-start-3 lg:row-start-1 lg:row-span-3 space-y-8">
+                        </div>
+
+                        <div class="lg:col-span-2 lg:col-start-1 lg:row-start-2">
+                                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg">
+                                    <div id="goal-pace-form" class="space-y-6"></div>
+                                </div>
+                        </div>
+                        
+                        <div class="lg:col-span-2 lg:col-start-1 lg:row-start-3">
+                                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg space-y-4">
+                                    <h3 class="text-xl font-bold text-slate-900 dark:text-white">Guides & Information</h3>
+                                    <div id="infoContainer" class="space-y-2"></div>
+                                </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="tab-history-content" role="tabpanel" class="pc-tab-content">
+                </div>
+
+                <div id="tab-settings-content" role="tabpanel" class="pc-tab-content">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-overlay" class="pc-modal-overlay" role="dialog" aria-modal="true">
+        <div id="modal-content" class="pc-modal-content bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 w-11/12 max-w-4xl">
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const state = {
+            isDark: false,
+            history: [],
+            latestCalculation: null,
+            paceCardData: null,
+            settings: {
+                name: '',
+                hrData: { mhr: '', lthr: '' },
+                customSplits: [],
+                paceCardSplits: [],
+                motivationalQuote: '',
+                displayUnit: localStorage.getItem('paceCalcUnit') || 'miles',
+                historySort: { by: 'date', order: 'desc' }
+            },
+            currentStep: 1,
+            selectedBasis: localStorage.getItem('paceCalcBasis') || 'bear',
+            debounceTimer: null,
+            undoStack: [], // Multiple Undo Actions
+        };
+
+        const METERS_PER_MILE = 1609.34;
+        const METERS_PER_KM = 1000;
+        const CONFIG = {
+            distMap: {
+                fiveK: 5000, threeTwo: 3200, oneSix: 1600, bear: 1.17 * METERS_PER_MILE,
+                marathon: 42195, halfMarathon: 21097.5, tenK: 10000,
+                palmerLake: 4 * METERS_PER_MILE,
+                custom: 0 // Placeholder for custom distance
+            },
+            benchmarks: [
+                { bear: 420, fiveK: 930 },
+                { bear: 480, fiveK: 1020 },
+                { bear: 540, fiveK: 1110 },
+                { bear: 600, fiveK: 1200 }
+            ].sort((a,b) => a.bear - b.bear),
+            hrZones: {
+                mhr: [
+                    { name: 'Recovery', low: 0.60, high: 0.75 }, { name: 'Foundation', low: 0.75, high: 0.85 },
+                    { name: 'Tempo', low: 0.82, high: 0.89 }, { name: 'Lactate Threshold', low: 0.88, high: 0.92 },
+                    { name: 'CV', low: 0.90, high: 0.95 }, { name: '5K', low: 0.95, high: 0.98 }
+                ],
+                lthr: [
+                    { name: 'Recovery', low: 0.80, high: 0.90 }, { name: 'Foundation', low: 0.90, high: 0.95 },
+                    { name: 'Tempo', low: 0.96, high: 1.00 }, { name: 'Lactate Threshold', low: 0.99, high: 1.02 },
+                    { name: 'CV', low: 1.02, high: 1.06 }, { name: '5K', low: 1.05, high: 1.10 }
+                ]
+            },
+            allPaces: [
+                { name: "Recovery", slow: 0.63, fast: 0.69, color: "#c6efce", darkColor: "#166534", type: 'zone' },
+                { name: "Foundation", slow: 0.70, fast: 0.80, color: "#d9ead3", darkColor: "#22502A", type: 'zone' },
+                { name: "Steady", slow: 0.80, fast: 0.85, color: "#fff2cc", darkColor: "#713f12", type: 'zone' },
+                { name: "Tempo", slow: 0.86, fast: 0.90, color: "#fce5cd", darkColor: "#7c2d12", type: 'zone' },
+                { name: "Lactate Threshold", slow: 0.91, fast: 0.94, color: "#f4cccc", darkColor: "#881337", type: 'zone' },
+                { name: "CV", slow: 0.95, fast: 0.97, color: "#ead1dc", darkColor: "#831843", type: 'zone' },
+                { name: "Marathon", dist: 42195, color: "#fef3c7", darkColor: "#713f12", type: 'race'},
+                { name: "10K", dist: 10000, color: "#fca5a5", darkColor: "#991b1b", type: 'race'},
+                { name: "5K", dist: 5000, color: "#e6b8af", darkColor: "#8c2a27", type: 'race' },
+                { name: "3200m", dist: 3200, color: "#d99694", darkColor: "#803230", type: 'race' },
+                { name: "1600m", dist: 1600, color: "#c0504d", darkColor: "#932926", type: 'race' },
+                { name: "800m", dist: 800, color: "#e06666", darkColor: "#b91c1c", type: 'race' },
+                { name: "400m", dist: 400, color: "#a4c2f4", darkColor: "#1e3a8a", type: 'race' }
+            ],
+            defaultSplitDistances: [
+                { dist: 100, label: '100m' }, { dist: 200, label: '200m' }, { dist: 300, label: '300m' },
+                { dist: 400, label: '400m' }, { dist: 600, label: 'Limbach' }, { dist: 800, label: '800m' },
+                { dist: 1000, label: '1000m' }, { dist: 1200, label: '1200m' }, { dist: 1309, label: 'PL Loop' },
+                { dist: 1600, label: '1600m' }, { dist: 2000, label: '2000m' }
+            ],
+            inputPlaceholders: {
+                m: "MM", s: "SS"
+            },
+            inputLabels: {
+                bear: "Bear Time", fiveK: "5K Time",
+                threeTwo: "3200m Time", oneSix: "1600m Time",
+                pace: "Pace / mi", palmerLake: "Palmer Lake 4 Miler Time",
+                custom: "Custom Distance Time"
+            },
+            exampleTimes: {
+                bear: { m: '8', s: '30' }, fiveK: { m: '19', s: '45' },
+                threeTwo: { m: '12', s: '00' }, oneSix: { m: '5', s: '30' },
+                pace: { m: '7', s: '15' }, palmerLake: { m: '28', s: '00' },
+                custom: { m: '45', s: '00'}
+            }
+        };
+        const INFO_CONTENT = [
+             { type: 'details', title: "How to Use This Calculator", content: `<ol class="list-decimal pl-5 space-y-2 text-slate-600 dark:text-slate-400"><li><b class="text-slate-700 dark:text-slate-300">Enter Your Time:</b> Select a performance basis and enter the numbers for your time. The cursor will move automatically.</li><li><b class="text-slate-700 dark:text-slate-300">Calculate:</b> Hit the "Calculate" button.</li><li><b class="text-slate-700 dark:text-slate-300">Save (Optional):</b> Click "Save Pace" to add the result to your history and track your progress.</li><li><b class="text-slate-700 dark:text-slate-300">Review & Apply:</b> Use the equivalent times and training paces to guide your workouts.</li></ol>`},
+             { type: 'header', title: 'Training Zone Descriptions' },
+             { type: 'details', title: 'Recovery', content: `<div class="space-y-2 text-sm text-slate-600 dark:text-slate-400"><p><b class="text-slate-700 dark:text-slate-300">Purpose:</b> To promote healing and recovery between hard sessions. This is the easiest running you'll do.</p><p><b class="text-slate-700 dark:text-slate-300">How it Feels:</b> Effortless. You should be able to hold a full conversation without ever noticing your breathing. If you have to think about the pace, you're going too fast. This zone is about time on your feet, promoting blood flow, and clearing metabolic waste, not building fitness.</p></div>`},
+             { type: 'details', title: 'Foundation / Steady', content: `<div class="space-y-2 text-sm text-slate-600 dark:text-slate-400"><p><b class="text-slate-700 dark:text-slate-300">Purpose:</b> This is the bread and butter of endurance training. These paces build your aerobic engine, capillary networks, and mitochondrial density, improving your body's ability to use oxygen efficiently. This zone covers what coaches like Tinman call "Easy Aerobic" up to what Mike Smith's NAU runners would call a "steady" effort.</p><p><b class="text-slate-700 dark:text-slate-300">How it Feels:</b> Comfortable and controlled. You can hold a conversation, but your breathing is more rhythmic than on a recovery run. It's a purposeful but low-stress pace that you feel you could maintain for a very long time. The upper end of this range feels like you're "working" but not straining.</p></div>`},
+             { type: 'details', title: 'Tempo / Lactate Threshold', content: `<div class="space-y-2 text-sm text-slate-600 dark:text-slate-400"><p><b class="text-slate-700 dark:text-slate-300">Purpose:</b> To improve your body's ability to clear and utilize lactate, directly increasing the pace you can sustain for long periods. This is the cornerstone of modern endurance training. The goal isn't to "tolerate" lactate, but to train your body to use it as a powerful fuel source.</p><p class="mt-2"><b class="text-slate-700 dark:text-slate-300">The Science & Philosophy:</b></p><ul class="list-disc pl-5 space-y-1 mt-1"><li><b class="text-slate-700 dark:text-slate-300">Lactate Threshold (LT)</b> is the intensity at which lactate begins to accumulate in the blood faster than it can be cleared. Training here raises this tipping point.</li><li><b class="text-slate-700 dark:text-slate-300">Mike Scannell's</b> approach with athletes like Grant Fisher focuses on finding the "maximal steady state" — the highest intensity where lactate levels remain stable (traditionally cited as ~4.0 mmol/L, but highly individual). This is a pace that can be sustained for 60+ minutes in elite athletes.</li><li>The <b class="text-slate-700 dark:text-slate-300">Norwegian model</b> used by Jakob Ingebrigtsen involves "double threshold" days, using lactate meters to ensure efforts stay within a specific range (often 2.5-4.5 mmol/L). This allows for a large volume of high-quality work without excessive stress, enabling faster recovery and more frequent stimuli.</li></ul><p class="mt-2"><b class="text-slate-700 dark:text-slate-300">How it Feels:</b> "Comfortably hard." Your breathing is deep and controlled, but not labored. You can speak a few words at a time, but not hold a conversation. Crucially, as per Canova's philosophy, you should finish the workout feeling strong and in control, not completely spent. You should feel like you could have done "one more rep" or held the pace for "ten more minutes."</p></div>`},
+             { type: 'details', title: 'CV (Critical Velocity)', content: `<div class="space-y-2 text-sm text-slate-600 dark:text-slate-400"><p><b class="text-slate-700 dark:text-slate-300">Purpose:</b> Popularized by coach Tom "Tinman" Schwartz, Critical Velocity (CV) is a pace approximately equivalent to <strong class="text-slate-700 dark:text-slate-300">10k race effort</strong>, or an intensity you could sustain all-out for about 30-35 minutes. Training with intervals at this pace is a highly efficient way to improve aerobic power, running economy, and lactate clearance with less stress than traditional, faster VO₂max intervals.</p><p><b class="text-slate-700 dark:text-slate-300">How it Feels:</b> Hard, but controlled and rhythmic. It's faster and more demanding than a threshold run, but it is NOT a sprint. You are breathing hard and can't hold a conversation. The key is to keep the effort smooth and consistent throughout each repetition, hitting your target splits without straining. Tinman describes it as "comfortably hard" but a step up from tempo running.</p></div>`},
+             { type: 'header', title: 'Race Pace Descriptions'},
+             { type: 'details', title: '5k Pace', content: `<div class="space-y-2 text-sm text-slate-600 dark:text-slate-400"><p><b class="text-slate-700 dark:text-slate-300">Purpose:</b> This is a high-end aerobic effort, bordering on maximum oxygen uptake (VO₂max). Racing and training at this intensity is a potent stimulus for improving your aerobic power and your ability to tolerate significant metabolic discomfort.</p><p><b class="text-slate-700 dark:text-slate-300">How it Feels:</b> Very hard. From the first mile, the effort is demanding. Breathing is deep and rapid, and conversation is impossible. The middle of the race requires significant mental focus to maintain pace as fatigue builds. The final kilometer is an exercise in pushing through pain and maintaining form as your body screams to slow down.</p></div>`},
+             { type: 'details', title: '3200m Pace', content: `<div class="space-y-2 text-sm text-slate-600 dark:text-slate-400"><p><b class="text-slate-700 dark:text-slate-300">Purpose:</b> This is a true VO₂max effort. It directly targets your body's maximum ability to transport and use oxygen. It requires a blend of speed, aerobic power, and grit, making it a cornerstone of track-focused training.</p><p><b class="text-slate-700 dark:text-slate-300">How it Feels:</b> Intense from the start. The pace feels manageable for the first lap or two, but discomfort escalates quickly. Breathing is maximal, and your muscles will begin to burn from lactate accumulation. The final laps are a mental and physical battle to hold on, fighting the urge to slow down as you operate at or near your absolute physiological limit.</p></div>`},
+             { type: 'details', title: '1600m (Mile) Pace', content: `<div class="space-y-2 text-sm text-slate-600 dark:text-slate-400"><p><b class="text-slate-700 dark:text-slate-300">Purpose:</b> A classic middle-distance event that requires a unique combination of speed, VO₂max power, and anaerobic endurance. Training at this pace improves speed endurance and your ability to recruit muscle fibers quickly and efficiently under high fatigue.</p><p><b class="text-slate-700 dark:text-slate-300">How it Feels:</b> Fast and demanding from the gun. The pace feels quick but not quite a sprint for the first lap. By the second and third laps ("the championship laps"), the effort is extremely high, lactate builds rapidly, and breathing is labored. The final 400m is an all-out drive, fighting to maintain form and turnover as your body reaches its anaerobic limit.</p></div>`},
+             { type: 'header', title: 'The Bear Challenge' },
+             { type: 'details', title: "Boys' Standards", content: `<div class="space-y-3 text-sm text-slate-600 dark:text-slate-400"><p><b class="text-slate-700 dark:text-slate-300">What is "The Bear":</b> A 1.17-mile uphill course with a 308-foot elevation gain (avg grade 5.0%), starting at 6,979 feet and finishing at 7,287 feet. It's a benchmark workout to develop aerobic capacity, muscular endurance, and mental resilience.</p><hr class="border-slate-200 dark:border-slate-600 my-2"><div><h4 class="font-semibold text-slate-800 dark:text-slate-200">Shoes/Spikes Reward: Breaking 7:00</h4><ul class="list-disc pl-5 space-y-1 mt-1"><li><b class="text-slate-700 dark:text-slate-300">Achievement:</b> Running 7:00 or faster.</li><li><b class="text-slate-700 dark:text-slate-300">What It Means:</b> This shows you’re in about <b class="text-slate-700 dark:text-slate-200">15:30 5K shape</b>. It’s a big deal and highlights your speed and endurance.</li><li><b class="text-slate-700 dark:text-slate-300">Reward:</b> A new pair of running shoes or spikes.</li></ul></div><div><h4 class="font-semibold text-slate-800 dark:text-slate-200 mt-2">"I Conquered The Bear" Shirt: Breaking 8:00</h4><ul class="list-disc pl-5 space-y-1 mt-1"><li><b class="text-slate-700 dark:text-slate-300">Achievement:</b> Running 8:00 or faster.</li><li><b class="text-slate-700 dark:text-slate-300">What It Means:</b> This is like being in around <b class="text-slate-700 dark:text-slate-200">17:00 5K shape</b>. It shows you have strong endurance and running skills.</li><li><b class="text-slate-700 dark:text-slate-300">Reward:</b> The “I Conquered The Bear” shirt.</li></ul></div></div>`},
+             { type: 'details', title: "Girls' Standards", content: `<div class="space-y-3 text-sm text-slate-600 dark:text-slate-400"><p><b class="text-slate-700 dark:text-slate-300">What is "The Bear":</b> A 1.17-mile uphill course with a 308-foot elevation gain (avg grade 5.0%), starting at 6,979 feet and finishing at 7,287 feet. It's a benchmark workout to develop aerobic capacity, muscular endurance, and mental resilience.</p><hr class="border-slate-200 dark:border-slate-600 my-2"><div><h4 class="font-semibold text-slate-800 dark:text-slate-200">Shoes/Spikes Reward: Breaking 9:00</h4><ul class="list-disc pl-5 space-y-1 mt-1"><li><b class="text-slate-700 dark:text-slate-300">Achievement:</b> Running 9:00 or faster.</li><li><b class="text-slate-700 dark:text-slate-300">What It Means:</b> This shows you’re in about <b class="text-slate-700 dark:text-slate-200">18:30 5K shape</b> at sea level.</li><li><b class="text-slate-700 dark:text-slate-300">Reward:</b> A new pair of running shoes or spikes.</li></ul></div><div><h4 class="font-semibold text-slate-800 dark:text-slate-200 mt-2">"I Conquered The Bear" Shirt: Breaking 10:00</h4><ul class="list-disc pl-5 space-y-1 mt-1"><li><b class="text-slate-700 dark:text-slate-300">Achievement:</b> Running 10:00 or faster.</li><li><b class="text-slate-700 dark:text-slate-300">What It Means:</b> This is like being in around <b class="text-slate-700 dark:text-slate-200">20:00 5K shape</b> at sea level.</li><li><b class="text-slate-700 dark:text-slate-300">Reward:</b> The “I Conquered The Bear” shirt.</li></ul></div></div>`},
+        ];
+
+        const DOMElements = {
+            wrapper: document.getElementById('pc-calculator-wrapper'),
+            darkToggle: document.getElementById("darkToggle"),
+            darkToggleIndicator: document.getElementById("darkToggleIndicator"),
+            mainCalcForm: document.getElementById("main-calc-form"),
+            goalPaceForm: document.getElementById("goal-pace-form"),
+            resultsColumn: document.getElementById("results-column"),
+            modalOverlay: document.getElementById('modal-overlay'),
+            modalContent: document.getElementById('modal-content'),
+            toastContainer: document.getElementById('toast-container'),
+            infoContainer: document.getElementById('infoContainer'),
+            srAnnouncer: document.getElementById('sr-announcer'),
+            tabs: {
+                calc: { btn: document.getElementById('tab-calc-btn'), content: document.getElementById('tab-calc-content') },
+                history: { btn: document.getElementById('tab-history-btn'), content: document.getElementById('tab-history-content') },
+                settings: { btn: document.getElementById('tab-settings-btn'), content: document.getElementById('tab-settings-content') }
+            }
+        };
+        
+        const Calculations = {
+            timeToSec(timeStr, format = 'mm:ss') {
+                if (!timeStr || typeof timeStr !== 'string') return NaN;
+                const parts = timeStr.trim().split(':').map(Number);
+                if (parts.some(isNaN)) return NaN;
+                if (format === 'hh:mm:ss' && parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+                if (format === 'mm:ss' && parts.length === 2) return parts[0] * 60 + parts[1];
+                if (parts.length === 1) return parts[0];
+                return NaN;
+            },
+            secToPace(sec, unit = 'miles') {
+                if (isNaN(sec) || !isFinite(sec)) return "N/A";
+                
+                let conversionFactor = 1;
+                if (unit === 'km') {
+                    conversionFactor = METERS_PER_KM / METERS_PER_MILE;
+                }
+                
+                sec = Math.round(sec / conversionFactor);
+                const m = Math.floor(sec / 60);
+                const s = sec % 60;
+                return `${m}:${String(s).padStart(2, '0')}`;
+            },
+            secToHMS(sec) {
+                if (isNaN(sec) || !isFinite(sec)) return "N/A";
+                sec = Math.round(sec);
+                const h = Math.floor(sec / 3600);
+                const m = Math.floor((sec % 3600) / 60);
+                const s = sec % 60;
+                let timeString = `${String(m).padStart(h > 0 ? 2 : 1, '0')}:${String(s).padStart(2, '0')}`;
+                if (h > 0) timeString = `${h}:${timeString}`;
+                return timeString;
+            },
+            getInterpolated5kTime(bearTimeInSec, benchmarks) {
+                const first = benchmarks[0], last = benchmarks[benchmarks.length - 1];
+                if (bearTimeInSec <= first.bear) {
+                    const p2 = benchmarks[1];
+                    return first.fiveK + (bearTimeInSec - first.bear) * (p2.fiveK - first.fiveK) / (p2.bear - first.bear);
+                }
+                if (bearTimeInSec >= last.bear) {
+                    const p1 = benchmarks[benchmarks.length - 2];
+                    return p1.fiveK + (bearTimeInSec - p1.bear) * (last.fiveK - p1.fiveK) / (last.bear - p1.bear);
+                }
+                for (let i = 0; i < benchmarks.length - 1; i++) {
+                    if (bearTimeInSec >= benchmarks[i].bear && bearTimeInSec <= benchmarks[i+1].bear) {
+                        const p1 = benchmarks[i], p2 = benchmarks[i+1];
+                        return p1.fiveK + (bearTimeInSec - p1.bear) * (p2.fiveK - p1.fiveK) / (p2.bear - p1.bear);
+                    }
+                }
+                return NaN;
+            },
+            getInterpolatedBearTime(fiveKTimeInSec, benchmarks) {
+                const sortedBenchmarks = [...benchmarks].sort((a, b) => a.fiveK - b.fiveK);
+                const first = sortedBenchmarks[0], last = sortedBenchmarks[sortedBenchmarks.length - 1];
+
+                if (fiveKTimeInSec <= first.fiveK) {
+                    const p1 = sortedBenchmarks[0], p2 = sortedBenchmarks[1];
+                    return p1.bear + (fiveKTimeInSec - p1.fiveK) * (p2.bear - p1.bear) / (p2.fiveK - p1.fiveK);
+                }
+                if (fiveKTimeInSec >= last.fiveK) {
+                    const p1 = sortedBenchmarks[sortedBenchmarks.length - 2], p2 = sortedBenchmarks[sortedBenchmarks.length - 1];
+                    return p1.bear + (fiveKTimeInSec - p1.fiveK) * (p2.bear - p1.bear) / (p2.fiveK - p1.fiveK);
+                }
+                for (let i = 0; i < sortedBenchmarks.length - 1; i++) {
+                    if (fiveKTimeInSec >= sortedBenchmarks[i].fiveK && fiveKTimeInSec <= sortedBenchmarks[i+1].fiveK) {
+                        const p1 = sortedBenchmarks[i], p2 = sortedBenchmarks[i+1];
+                        return p1.bear + (fiveKTimeInSec - p1.fiveK) * (p2.bear - p1.bear) / (p2.fiveK - p1.fiveK);
+                    }
+                }
+                return NaN;
+            },
+            calculateVDOT(distanceMeters, timeSeconds) {
+                if (timeSeconds <= 0) return 0;
+                const timeMinutes = timeSeconds / 60;
+                const velocity = distanceMeters / timeMinutes;
+                const percentVO2Max = 0.8 + 0.189439 * Math.exp(-0.012778 * timeMinutes) + 0.2989558 * Math.exp(-0.1932605 * timeMinutes);
+                const vo2 = -4.60 + 0.182258 * velocity + 0.000104 * Math.pow(velocity, 2);
+                return vo2 / percentVO2Max;
+            },
+            calculateTimeFromVDOT(vdot, distanceMeters) {
+                let min_v = 100, max_v = 500, velocity;
+                for (let i = 0; i < 30; i++) {
+                    velocity = (min_v + max_v) / 2;
+                    const timeMinutes = distanceMeters / velocity;
+                    const percentVO2Max = 0.8 + 0.189439 * Math.exp(-0.012778 * timeMinutes) + 0.2989558 * Math.exp(-0.1932605 * timeMinutes);
+                    const vo2 = -4.60 + 0.182258 * velocity + 0.000104 * Math.pow(velocity, 2);
+                    if (vo2 / percentVO2Max < vdot) min_v = velocity; else max_v = velocity;
+                }
+                velocity = (min_v + max_v) / 2;
+                return (distanceMeters / velocity) * 60;
+            },
+        };
+
+        const UI = {
+            setDarkMode(isDark, savePreference = true) {
+                state.isDark = isDark;
+                DOMElements.wrapper.classList.toggle('dark', isDark);
+                DOMElements.darkToggleIndicator.style.transform = isDark ? 'translateX(24px)' : 'translateX(0px)';
+                DOMElements.darkToggleIndicator.innerHTML = isDark ? '<i class="ph-sun text-yellow-400"></i>' : '<i class="ph-moon text-indigo-600"></i>';
+                
+                if (savePreference) {
+                    localStorage.setItem('paceCalcDarkMode', isDark);
+                }
+
+                if (DOMElements.tabs.history.content.classList.contains('active')) {
+                    this.renderHistoryTab(); 
+                }
+                if(state.latestCalculation) {
+                    this.renderResults();
+                }
+            },
+            switchTab(tabKey) {
+                Object.values(DOMElements.tabs).forEach(tab => {
+                    tab.btn.classList.remove('active');
+                    tab.btn.setAttribute('aria-selected', 'false');
+                    tab.content.classList.remove('active');
+                });
+                DOMElements.tabs[tabKey].btn.classList.add('active');
+                DOMElements.tabs[tabKey].btn.setAttribute('aria-selected', 'true');
+                DOMElements.tabs[tabKey].content.classList.add('active');
+                
+                if (tabKey === 'history') {
+                    this.renderHistoryTab();
+                }
+                if (tabKey === 'settings') {
+                    this.renderSettingsTab();
+                }
+                DOMElements.srAnnouncer.textContent = `${tabKey.charAt(0).toUpperCase() + tabKey.slice(1)} tab selected.`;
+            },
+            showToast(message, type = 'success') {
+                const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+                const icon = type === 'success' ? '<i class="ph-check-circle"></i>' : '<i class="ph-x-circle"></i>';
+                const toast = document.createElement('div');
+                toast.className = `flex items-center gap-3 ${bgColor} text-white font-bold py-3 px-5 rounded-lg shadow-xl transform transition-all duration-300 pc-fade-in`;
+                toast.innerHTML = `${icon}<span>${message}</span>`;
+                DOMElements.toastContainer.appendChild(toast);
+                DOMElements.srAnnouncer.textContent = message;
+                setTimeout(() => {
+                    toast.style.transform = 'translateX(120%)';
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            },
+            showModal(htmlContent) {
+                DOMElements.modalContent.innerHTML = htmlContent;
+                DOMElements.modalOverlay.style.display = 'block';
+                DOMElements.modalContent.querySelector('button, a, input, select, textarea')?.focus();
+            },
+            hideModal() {
+                DOMElements.modalOverlay.style.display = 'none';
+                DOMElements.modalContent.innerHTML = '';
+            },
+            renderActionButtons(containerId) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+
+                const isSaved = state.latestCalculation && state.latestCalculation.isSaved;
+
+                let saveButtonHTML = '';
+                if (isSaved) {
+                    saveButtonHTML = `<button id="savePaceBtn" aria-label="Pace is already saved" class="w-full flex items-center justify-center gap-2 bg-green-800 text-green-300 font-bold py-3 px-6 rounded-lg shadow-inner cursor-not-allowed" disabled><i class="ph-check-circle"></i><span>Saved</span></button>`;
+                } else {
+                    saveButtonHTML = `<button id="savePaceBtn" aria-label="Save current pace calculation to history" class="w-full flex items-center justify-center gap-2 bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-transform hover:scale-105"><i class="ph-floppy-disk"></i><span>Save Pace</span></button>`;
+                }
+
+                const undoButtonHTML = state.undoStack.length > 0 ? `
+                    <button id="undo-btn" aria-label="Undo last action" class="w-full flex items-center justify-center gap-2 bg-gray-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-600 transition">
+                        <i class="ph-arrow-u-left-down"></i><span>Undo (${state.undoStack.length})</span>
+                    </button>
+                ` : '';
+
+                container.innerHTML = `
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                        <button id="calc-btn" aria-label="Calculate paces" class="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-transform hover:scale-105"><i class="ph-calculator"></i><span>Calculate</span></button>
+                        <button id="reset-btn" aria-label="Reset input fields" class="w-full flex items-center justify-center gap-2 bg-slate-400 text-white font-bold py-3 px-6 rounded-lg hover:bg-slate-500 transition"><i class="ph-arrows-counter-clockwise"></i><span>Reset</span></button>
+                        ${saveButtonHTML}
+                        ${undoButtonHTML}
+                        <button id="shareBtn" aria-label="Share results" class="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-transform hover:scale-105">
+                            <i class="ph-share-network"></i><span>Share</span>
+                        </button>
+                        <button id="copyTableBtn" aria-label="Copy results table" class="w-full flex items-center justify-center gap-2 bg-slate-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-transform hover:scale-105">
+                            <i class="ph-copy"></i><span>Copy Table</span>
+                        </button>
+                        <button id="generatePaceCardBtn" aria-label="Generate pace card" class="w-full flex items-center justify-center gap-2 bg-teal-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-transform hover:scale-105">
+                            <i class="ph-cardholder"></i><span>Pace Card</span>
+                        </button>
+                    </div>
+                `;
+            },
+            renderEmptyState() {
+                DOMElements.resultsColumn.innerHTML = `
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg text-center h-full flex flex-col justify-center items-center pc-fade-in">
+                        <i class="ph-chart-line-up text-6xl text-indigo-400"></i>
+                        <h3 class="text-xl font-bold mt-4 text-slate-800 dark:text-slate-200">Ready to Run?</h3>
+                        <p class="text-slate-500 dark:text-slate-400 mt-1 max-w-sm">Select a performance basis on the left and enter your time to get started.</p>
+                    </div>
+                `;
+            },
+            renderResults() {
+                const { vdot } = state.latestCalculation;
+                const displayUnit = state.settings.displayUnit;
+                const paceUnitLabel = displayUnit === 'miles' ? 'mi' : 'km';
+                DOMElements.resultsColumn.innerHTML = ""; 
+
+                const unitToggleHTML = `
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-lg flex items-center justify-center gap-4 pc-no-print">
+                        <label for="unit-toggle" class="font-semibold text-slate-700 dark:text-slate-300">Pace Unit:</label>
+                        <select id="unit-toggle" class="bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg p-2 border-2 border-transparent focus:border-indigo-500 focus:ring-0">
+                            <option value="miles" ${displayUnit === 'miles' ? 'selected' : ''}>Miles</option>
+                            <option value="km" ${displayUnit === 'km' ? 'selected' : ''}>Kilometers</option>
+                        </select>
+                    </div>
+                `;
+                DOMElements.resultsColumn.innerHTML += unitToggleHTML;
+
+                const tableWrapper = document.createElement('div');
+                tableWrapper.className = "bg-white dark:bg-slate-800 rounded-2xl shadow-lg pc-fade-in";
+                
+                const vVO2maxPacePerMeter = Calculations.calculateTimeFromVDOT(vdot, CONFIG.distMap.fiveK) / CONFIG.distMap.fiveK;
+                state.paceCardData = { vdot: vdot.toFixed(1), paces: {} };
+
+                const sortedPaces = [...CONFIG.allPaces].sort((a, b) => {
+                    const getSortValue = (item) => {
+                        if (item.type === 'zone') return 1 / ((item.slow + item.fast) / 2);
+                        return Calculations.calculateTimeFromVDOT(vdot, item.dist) / item.dist;
+                    };
+                    return getSortValue(b) - getSortValue(a);
+                });
+                
+                const hrIsActive = state.settings.hrData.mhr || state.settings.hrData.lthr;
+                const hrHeaderClass = hrIsActive ? 'text-indigo-500 dark:text-indigo-400' : '';
+                const hrHeaderIcon = hrIsActive ? '<i class="ph-heart-fill text-xs ml-1"></i>' : '';
+                
+                const allSplits = [...CONFIG.defaultSplitDistances, ...state.settings.customSplits].sort((a, b) => a.dist - b.dist);
+                const tableHeadersHTML = allSplits.map(split => `<th scope="col" class="px-4 py-3 font-semibold whitespace-nowrap">${split.label}</th>`).join('');
+
+                const tableBodyHTML = sortedPaces.map(item => {
+                    const rowColor = state.isDark ? item.darkColor : item.color;
+                    let slowPace, fastPace, rowHTML = '';
+                    let medianPacePerMeter;
+                    const cellStyle = "px-4 py-2 whitespace-nowrap font-semibold text-gray-900 dark:text-white";
+                    
+                    const hrZone = AppLogic.getHRZone(item.name);
+
+                    let splitsHTML = '';
+                    if (item.type === 'zone') {
+                        const slowPacePerMeter = vVO2maxPacePerMeter / item.slow;
+                        const fastPacePerMeter = vVO2maxPacePerMeter / item.fast;
+                        slowPace = Calculations.secToPace(slowPacePerMeter * METERS_PER_MILE, displayUnit);
+                        fastPace = Calculations.secToPace(fastPacePerMeter * METERS_PER_MILE, displayUnit);
+                        
+                        medianPacePerMeter = vVO2maxPacePerMeter / ((item.slow + item.fast) / 2);
+                        splitsHTML = allSplits.map(split => `<td class="${cellStyle}">${Calculations.secToPace(medianPacePerMeter * split.dist)}</td>`).join('');
+                        rowHTML = `<td class="${cellStyle}">${slowPace}</td><td class="${cellStyle}">${fastPace}</td><td class="px-4 py-2 whitespace-nowrap font-semibold text-gray-900 dark:text-white">${hrZone}</td>${splitsHTML}<td class="${cellStyle}">-</td>`;
+                    } else { 
+                        const predTimeSec = Calculations.calculateTimeFromVDOT(vdot, item.dist);
+                        const fastTime = predTimeSec * 0.985, slowTime = predTimeSec * 1.015;
+                        const distInUnit = displayUnit === 'miles' ? item.dist / METERS_PER_MILE : item.dist / METERS_PER_KM;
+                        
+                        slowPace = Calculations.secToPace(slowTime / distInUnit, displayUnit);
+                        fastPace = Calculations.secToPace(fastTime / distInUnit, displayUnit);
+                        
+                        medianPacePerMeter = predTimeSec / item.dist;
+
+                        splitsHTML = allSplits.map(split => `<td class="${cellStyle}">${Calculations.secToPace(medianPacePerMeter * split.dist)}</td>`).join('');
+                        rowHTML = `<td class="${cellStyle}">${slowPace}</td><td class="${cellStyle}">${fastPace}</td><td class="px-4 py-2 whitespace-nowrap font-semibold text-gray-900 dark:text-white">${hrZone}</td>${splitsHTML}<td class="${cellStyle}">${Calculations.secToHMS(fastTime)} - ${Calculations.secToHMS(slowTime)}</td>`;
+                    }
+
+                    state.paceCardData.paces[item.name] = {
+                        medianPacePerMeter: medianPacePerMeter
+                    };
+                    
+                    return `<tr class="border-b border-slate-200 dark:border-slate-700" style="background-color: ${state.isDark ? `${rowColor}40` : rowColor};">
+                        <td class="pc-sticky-col px-4 py-3 font-semibold whitespace-nowrap text-slate-900 dark:text-white" style="background-color: ${rowColor};">${item.name}</td>
+                        ${rowHTML}
+                    </tr>`;
+                }).join('');
+
+                tableWrapper.innerHTML = `
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Training & Race Paces</h3>
+                    </div>
+                    <div class="table-container max-h-[50vh] lg:max-h-none overflow-auto">
+                        <table id="paceTable" class="w-full text-sm text-left">
+                            <thead class="pc-sticky-header text-xs text-slate-600 dark:text-slate-300 uppercase bg-slate-100 dark:bg-slate-700">
+                                <tr>
+                                    <th scope="col" class="pc-sticky-col px-4 py-3 font-semibold bg-slate-100 dark:bg-slate-700 whitespace-nowrap">Zone/Dist.</th>
+                                    <th scope="col" class="px-4 py-3 font-semibold whitespace-nowrap">Pace/${paceUnitLabel} (Slow)</th>
+                                    <th scope="col" class="px-4 py-3 font-semibold whitespace-nowrap">Pace/${paceUnitLabel} (Fast)</th>
+                                    <th scope="col" class="px-4 py-3 font-semibold whitespace-nowrap ${hrHeaderClass}">HR Zone ${hrHeaderIcon}</th>
+                                    ${tableHeadersHTML}
+                                    <th scope="col" class="px-4 py-3 font-semibold whitespace-nowrap">Pred. Time Range</th>
+                                </tr>
+                            </thead>
+                            <tbody>${tableBodyHTML}</tbody>
+                        </table>
+                    </div>`;
+                DOMElements.resultsColumn.appendChild(tableWrapper);
+
+                const equivWrapper = document.createElement('div');
+                equivWrapper.className = "bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg pc-fade-in";
+                
+                let equivRaces = [
+                    { name: "The Bear", type: 'special' },
+                    { name: "Palmer Lake 4 Miler", dist: CONFIG.distMap.palmerLake, type: 'vdot' },
+                    { name: "1600m", dist: CONFIG.distMap.oneSix, type: 'vdot' },
+                    { name: "3200m", dist: CONFIG.distMap.threeTwo, type: 'vdot' },
+                    { name: "5K", dist: CONFIG.distMap.fiveK, type: 'vdot' },
+                    { name: "10K", dist: 10000, type: 'vdot' }
+                ];
+                
+                const equivTimesHTML = equivRaces.map(race => {
+                    let predTimeSec;
+                    if (race.type === 'special' && race.name === 'The Bear') {
+                        const anchor5kTime = Calculations.calculateTimeFromVDOT(vdot, CONFIG.distMap.fiveK);
+                        predTimeSec = Calculations.getInterpolatedBearTime(anchor5kTime, CONFIG.benchmarks);
+                    } else {
+                        predTimeSec = Calculations.calculateTimeFromVDOT(vdot, race.dist);
+                    }
+                    const fastTime = predTimeSec * 0.985;
+                    const slowTime = predTimeSec * 1.015;
+                    
+                    return `<div class="bg-slate-100 dark:bg-slate-700/50 p-4 rounded-xl shadow-sm">
+                        <div class="text-sm font-semibold text-slate-500 dark:text-slate-400">${race.name}</div>
+                        <div class="text-xl font-bold text-slate-900 dark:text-white">${Calculations.secToHMS(fastTime)} - ${Calculations.secToHMS(slowTime)}</div>
+                    </div>`;
+                }).join('');
+
+                equivWrapper.innerHTML = `
+                    <h3 class="text-xl font-bold mb-1 text-slate-900 dark:text-white">Performance Equivalents</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Based on a VDOT of <span class="font-bold text-indigo-500 dark:text-indigo-400">${vdot.toFixed(1)}</span></p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-center">${equivTimesHTML}</div>
+                    <p class="text-xs text-slate-400 dark:text-slate-500 mt-4">
+                        Predictions represent a likely performance range (±1.5%) but are not a guarantee.
+                    </p>`;
+                DOMElements.resultsColumn.appendChild(equivWrapper);
+                DOMElements.srAnnouncer.textContent = "Calculation results updated.";
+            },
+            renderHistoryTab() {
+                const historyContainer = DOMElements.tabs.history.content;
+                historyContainer.innerHTML = `
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg">
+                        <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+                           <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Progress History</h2>
+                           <div class="flex gap-2">
+                                <button id="importHistoryBtn" aria-label="Import history from a file" class="flex items-center gap-2 text-sm bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-600 transition"><i class="ph-upload"></i><span>Import</span></button>
+                                <button id="exportHistoryBtn" aria-label="Export history to a file" class="flex items-center gap-2 text-sm bg-green-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-green-600 transition"><i class="ph-download"></i><span>Export</span></button>
+                                <button id="clearHistoryBtn" aria-label="Clear all history" class="flex items-center gap-2 text-sm bg-red-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-red-600 transition"><i class="ph-trash"></i><span>Clear</span></button>
+                           </div>
+                        </div>
+                        <div class="flex flex-wrap justify-end items-center mb-4 gap-4">
+                            <label for="history-sort-by" class="sr-only">Sort by</label>
+                            <select id="history-sort-by" class="bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg p-2 border-2 border-transparent focus:border-indigo-500 focus:ring-0">
+                                <option value="date" ${state.settings.historySort.by === 'date' ? 'selected' : ''}>Date</option>
+                                <option value="vdot" ${state.settings.historySort.by === 'vdot' ? 'selected' : ''}>VDOT</option>
+                                <option value="mode" ${state.settings.historySort.by === 'mode' ? 'selected' : ''}>Mode</option>
+                            </select>
+                            <label for="history-sort-order" class="sr-only">Sort order</label>
+                            <select id="history-sort-order" class="bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg p-2 border-2 border-transparent focus:border-indigo-500 focus:ring-0">
+                                <option value="desc" ${state.settings.historySort.order === 'desc' ? 'selected' : ''}>Descending</option>
+                                <option value="asc" ${state.settings.historySort.order === 'asc' ? 'selected' : ''}>Ascending</option>
+                            </select>
+                        </div>
+                        <div id="history-content-container" class="space-y-8"></div>
+                    </div>`;
+
+                const historyContent = document.getElementById('history-content-container');
+                if (state.history.length === 0) {
+                    historyContent.innerHTML = `<div class="text-center py-10"><i class="ph-timer text-6xl text-slate-400 dark:text-slate-500"></i><h3 class="text-xl font-bold mt-4 text-slate-800 dark:text-slate-200">No History Yet</h3><p class="text-slate-500 dark:text-slate-400 mt-1">Calculate a pace and click "Save Pace" to start tracking your progress.</p></div>`;
+                    return;
+                }
+                
+                const insights = AppLogic.analyzeHistory();
+                historyContent.innerHTML = `
+                    ${this.renderHistoryInsights(insights)}
+                    <div id="progressChartContainer" class="mb-8"><h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">VDOT Progress</h3><div id="vdotChartWrapper" class="relative"><div id="vdotChart"></div><div id="chartTooltip" class="pc-chart-tooltip absolute bg-slate-800 dark:bg-slate-900 text-white text-xs rounded py-1 px-2 opacity-0"></div></div></div>
+                    <div id="historyListContainer"><h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Saved Paces</h3><ul id="historyList" class="space-y-3"></ul></div>
+                `;
+                
+                this.renderHistoryList();
+                this.renderProgressChart();
+            },
+            renderHistoryInsights(insights) {
+                if (!insights) return '';
+
+                const getTrendColor = (change) => change > 0 ? 'text-green-500' : 'text-red-500';
+                const getTrendIcon = (change) => change > 0 ? 'ph-arrow-up' : 'ph-arrow-down';
+                const formatVdotChange = (change) => {
+                    const sign = change > 0 ? '+' : '';
+                    return `${sign}${change.toFixed(1)}`;
+                };
+
+                return `
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Progress Summary</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            ${insights.overallVdotChange !== null ? `
+                            <div class="bg-slate-100 dark:bg-slate-700/50 p-4 rounded-xl flex items-center gap-4">
+                                <i class="ph-rocket-launch text-3xl ${getTrendColor(insights.overallVdotChange)}"></i>
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Overall Progress</p>
+                                    <p class="text-lg font-bold text-slate-800 dark:text-slate-200">${formatVdotChange(insights.overallVdotChange)} VDOT</p>
+                                </div>
+                            </div>` : ''}
+                            ${insights.recentVdotChange !== null ? `
+                            <div class="bg-slate-100 dark:bg-slate-700/50 p-4 rounded-xl flex items-center gap-4">
+                                <i class="${getTrendIcon(insights.recentVdotChange)} text-3xl ${getTrendColor(insights.recentVdotChange)}"></i>
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Recent Trend</p>
+                                    <p class="text-lg font-bold text-slate-800 dark:text-slate-200">${formatVdotChange(insights.recentVdotChange)} VDOT</p>
+                                </div>
+                            </div>` : ''}
+                            ${insights.bestVdotEntry ? `
+                            <div class="bg-slate-100 dark:bg-slate-700/50 p-4 rounded-xl flex items-center gap-4">
+                                <i class="ph-trophy text-3xl text-yellow-500"></i>
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Personal Best</p>
+                                    <p class="text-lg font-bold text-slate-800 dark:text-slate-200">${insights.bestVdotEntry.vdot} VDOT</p>
+                                </div>
+                            </div>` : ''}
+                            ${insights.monthlyChange !== null ? `
+                            <div class="bg-slate-100 dark:bg-slate-700/50 p-4 rounded-xl flex items-center gap-4">
+                                <i class="ph-calendar-check text-3xl ${getTrendColor(insights.monthlyChange)}"></i>
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Last 30 Days</p>
+                                    <p class="text-lg font-bold text-slate-800 dark:text-slate-200">${formatVdotChange(insights.monthlyChange)} VDOT</p>
+                                </div>
+                            </div>` : ''}
+                             ${insights.mostCommonBasis ? `
+                            <div class="bg-slate-100 dark:bg-slate-700/50 p-4 rounded-xl flex items-center gap-4">
+                                <i class="ph-repeat text-3xl text-blue-500"></i>
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-500 dark:text-slate-400">Your Go-To</p>
+                                    <p class="text-lg font-bold text-slate-800 dark:text-slate-200">${CONFIG.inputLabels[insights.mostCommonBasis]}</p>
+                                </div>
+                            </div>` : ''}
+                        </div>
+                    </div>
+                `;
+            },
+            renderHistoryList() {
+                const listEl = document.getElementById('historyList');
+                if (!listEl) return;
+                
+                const sortedHistory = AppLogic.sortHistory();
+
+                listEl.innerHTML = sortedHistory.map(item => {
+                    const date = new Date(item.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                    const modeLabel = CONFIG.inputLabels[item.mode].split(' (')[0];
+                    return `<li class="flex items-center justify-between p-4 bg-slate-100 dark:bg-slate-700/50 rounded-lg shadow-sm">
+                        <div>
+                            <p class="font-bold text-slate-800 dark:text-slate-200">${date}</p>
+                            <p class="text-sm text-slate-600 dark:text-slate-400">${modeLabel}: ${item.timeStr} → <span class="font-semibold text-indigo-500 dark:text-indigo-400">VDOT ${item.vdot}</span></p>
+                        </div>
+                        <button data-id="${item.id}" aria-label="Delete history entry from ${date}" class="delete-history-btn text-slate-400 hover:text-red-500 dark:hover:text-red-400 p-2 rounded-full transition"><i class="ph-x text-xl"></i></button>
+                    </li>`;
+                }).join('');
+            },
+            renderProgressChart() {
+                clearTimeout(state.debounceTimer);
+                state.debounceTimer = setTimeout(() => {
+                    const chartContainer = document.getElementById('vdotChart');
+                    const tooltipEl = document.getElementById('chartTooltip');
+                    if (!chartContainer || !tooltipEl || chartContainer.clientWidth === 0) return;
+                    if (state.history.length < 2) {
+                        chartContainer.innerHTML = '<p class="text-center text-slate-500 dark:text-slate-400">Need at least two saved points to show a progress chart.</p>';
+                        return;
+                    }
+                    const historyData = [...state.history].sort((a,b) => new Date(a.date) - new Date(b.date));
+
+                    const colors = {
+                        bg: 'transparent', grid: state.isDark ? '#334155' : '#e2e8f0',
+                        text: state.isDark ? '#94a3b8' : '#64748b', line: '#4f46e5',
+                        dot: state.isDark ? '#a5b4fc' : '#4f46e5', dotBorder: state.isDark ? '#1e293b' : '#ffffff'
+                    };
+                    const width = chartContainer.clientWidth;
+                    const height = 300;
+                    const padding = { top: 20, right: 20, bottom: 50, left: 40 };
+                    const vdots = historyData.map(d => d.vdot);
+                    const dates = historyData.map(d => new Date(d.date));
+                    const minVdot = Math.floor(Math.min(...vdots) - 2);
+                    const maxVdot = Math.ceil(Math.max(...vdots) + 2);
+                    const [minDate, maxDate] = [dates[0], dates[dates.length - 1]];
+
+                    const xScale = (date) => padding.left + (date - minDate) / (maxDate - minDate || 1) * (width - padding.left - padding.right);
+                    const yScale = (vdot) => height - padding.bottom - (vdot - minVdot) / (maxVdot - minVdot || 1) * (height - padding.top - padding.bottom);
+                    
+                    let yAxisLabels = [];
+                    for (let i = minVdot; i <= maxVdot; i++) { if (i % 2 === 0) yAxisLabels.push(i); }
+                    const xAxisLabels = historyData.map(d => ({ x: xScale(new Date(d.date)), label: new Date(d.date).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' }) }));
+                    const points = historyData.map(d => `${xScale(new Date(d.date))},${yScale(d.vdot)}`).join(' ');
+
+                    const circlesHTML = historyData.map((d, i) => 
+                        `<circle data-index="${i}" cx="${xScale(new Date(d.date))}" cy="${yScale(d.vdot)}" r="5" fill="${colors.dot}" stroke="${colors.dotBorder}" stroke-width="2" class="cursor-pointer chart-dot" aria-label="VDOT of ${d.vdot} on ${new Date(d.date).toLocaleDateString()}"/>`
+                    ).join('');
+
+                    chartContainer.innerHTML = `<svg width="${width}" height="${height}" style="font-family: Inter, sans-serif; font-size: 12px;"><rect width="100%" height="100%" fill="${colors.bg}" />${yAxisLabels.map(l => `<line x1="${padding.left}" y1="${yScale(l)}" x2="${width - padding.right}" y2="${yScale(l)}" stroke="${colors.grid}" stroke-dasharray="2,2"/>`).join('')}${yAxisLabels.map(l => `<text x="${padding.left - 8}" y="${yScale(l) + 4}" fill="${colors.text}" text-anchor="end">${l}</text>`).join('')}${xAxisLabels.map(item => `<text x="${item.x}" y="${height - padding.bottom + 20}" fill="${colors.text}" text-anchor="middle">${item.label}</text>`).join('')}<polyline fill="none" stroke="${colors.line}" stroke-width="2" points="${points}" />${circlesHTML}</svg>`;
+                }, 100);
+            },
+            renderInfo() {
+                DOMElements.infoContainer.innerHTML = '';
+                INFO_CONTENT.forEach(item => {
+                    if (item.type === 'header') {
+                        const header = document.createElement('h4');
+                        header.className = "text-lg font-semibold border-b border-slate-200 dark:border-slate-700 pb-2 mt-4 text-slate-900 dark:text-white";
+                        header.textContent = item.title;
+                        DOMElements.infoContainer.appendChild(header);
+                    } else if (item.type === 'details') {
+                        const details = document.createElement('details');
+                        details.className = "p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors duration-200";
+                        details.innerHTML = `<summary class="font-semibold text-md cursor-pointer text-slate-800 dark:text-indigo-400 flex justify-between items-center">${item.title}<i class="ph-caret-down transition-transform"></i></summary><div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-600">${item.content}</div>`;
+                        details.addEventListener('toggle', (e) => { e.target.querySelector('i').style.transform = e.target.open ? 'rotate(180deg)' : 'rotate(0deg)'; });
+                        DOMElements.infoContainer.appendChild(details);
+                    }
+                });
+            },
+            renderCalculatorStep() {
+                const form = DOMElements.mainCalcForm;
+                const currentStepEl = form.querySelector('.wizard-step');
+
+                const renderNewStep = () => {
+                    let newStepHTML = '';
+                    switch(state.currentStep) {
+                        case 1:
+                            newStepHTML = this._getBasisStepHTML();
+                            break;
+                        case 2:
+                            newStepHTML = this._getTimeStepHTML();
+                            break;
+                    }
+                    form.innerHTML = newStepHTML;
+                    const newStepEl = form.querySelector('.wizard-step');
+                    newStepEl.classList.add('pc-fade-in');
+                    
+                    if (state.currentStep === 2) {
+                        setTimeout(() => document.getElementById('timeInput-m')?.focus(), 0);
+                        this.renderActionButtons('action-buttons');
+                    }
+                };
+
+                if (currentStepEl) {
+                    currentStepEl.classList.add('pc-fade-out');
+                    currentStepEl.addEventListener('animationend', renderNewStep, { once: true });
+                } else {
+                    renderNewStep();
+                }
+            },
+            _getBasisStepHTML() {
+                return `
+                    <div class="wizard-step" data-step="1">
+                        <div class="flex justify-between items-center mb-4">
+                             <h3 class="text-lg font-bold text-slate-900 dark:text-white">Step 1: Select Basis</h3>
+                             <div class="text-sm font-semibold text-slate-500 dark:text-slate-400">Step 1 of 2</div>
+                        </div>
+                        <fieldset>
+                            <legend class="sr-only">Performance Basis</legend>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div><input type="radio" name="mode" value="bear" id="mode-bear" class="sr-only" ${state.selectedBasis === 'bear' ? 'checked' : ''}><label for="mode-bear" class="flex items-center justify-center text-center p-4 border-2 border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer transition-all duration-200 hover:border-indigo-500 dark:hover:border-indigo-500"><span class="font-semibold text-slate-700 dark:text-slate-300">Bear Time<br>(1.17mi)</span></label></div>
+                                <div><input type="radio" name="mode" value="palmerLake" id="mode-palmerLake" class="sr-only" ${state.selectedBasis === 'palmerLake' ? 'checked' : ''}><label for="mode-palmerLake" class="flex items-center justify-center text-center p-4 border-2 border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer transition-all duration-200 hover:border-indigo-500 dark:hover:border-indigo-500"><span class="font-semibold text-slate-700 dark:text-slate-300">Palmer Lake 4 Miler</span></label></div>
+                                <div><input type="radio" name="mode" value="fiveK" id="mode-fiveK" class="sr-only" ${state.selectedBasis === 'fiveK' ? 'checked' : ''}><label for="mode-fiveK" class="flex items-center justify-center text-center p-4 border-2 border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer transition-all duration-200 hover:border-indigo-500 dark:hover:border-indigo-500"><span class="font-semibold text-slate-700 dark:text-slate-300">5K Time</span></label></div>
+                                <div><input type="radio" name="mode" value="threeTwo" id="mode-threeTwo" class="sr-only" ${state.selectedBasis === 'threeTwo' ? 'checked' : ''}><label for="mode-threeTwo" class="flex items-center justify-center text-center p-4 border-2 border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer transition-all duration-200 hover:border-indigo-500 dark:hover:border-indigo-500"><span class="font-semibold text-slate-700 dark:text-slate-300">3200m Time</span></label></div>
+                                <div><input type="radio" name="mode" value="oneSix" id="mode-oneSix" class="sr-only" ${state.selectedBasis === 'oneSix' ? 'checked' : ''}><label for="mode-oneSix" class="flex items-center justify-center text-center p-4 border-2 border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer transition-all duration-200 hover:border-indigo-500 dark:hover:border-indigo-500"><span class="font-semibold text-slate-700 dark:text-slate-300">1600m Time</span></label></div>
+                                <div><input type="radio" name="mode" value="pace" id="mode-pace" class="sr-only" ${state.selectedBasis === 'pace' ? 'checked' : ''}><label for="mode-pace" class="flex items-center justify-center text-center p-4 border-2 border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer transition-all duration-200 hover:border-indigo-500 dark:hover:border-indigo-500"><span class="font-semibold text-slate-700 dark:text-slate-300">Pace</span></label></div>
+                                <div><input type="radio" name="mode" value="custom" id="mode-custom" class="sr-only" ${state.selectedBasis === 'custom' ? 'checked' : ''}><label for="mode-custom" class="flex items-center justify-center text-center p-4 border-2 border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer transition-all duration-200 hover:border-indigo-500 dark:hover:border-indigo-500"><span class="font-semibold text-slate-700 dark:text-slate-300">Custom Distance</span></label></div>
+                            </div>
+                        </fieldset>
+                        <button id="next-step-btn" class="mt-6 w-full flex items-center justify-center gap-2 bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-transform hover:scale-105">
+                            <span>Next Step</span><i class="ph-arrow-right"></i>
+                        </button>
+                    </div>
+                `;
+            },
+            _getTimeStepHTML() {
+                const mode = state.selectedBasis;
+                const commonInputClasses = "p-3 bg-slate-100 dark:bg-slate-700 border-2 border-transparent focus:border-indigo-500 focus:ring-0 rounded-lg shadow-sm text-slate-900 dark:text-white placeholder-slate-400 transition";
+                
+                const lastInputs = JSON.parse(localStorage.getItem('lastInputs') || '{}');
+                const [m = '', s = ''] = (lastInputs.mode === mode && lastInputs.timeStr) ? lastInputs.timeStr.split(':') : [];
+
+                const timeFormatSelectorHTML = `
+                    <div class="mb-4">
+                        <label for="timeFormat" class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Time Format</label>
+                        <select id="timeFormat" class="w-full p-3 bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white border-2 border-transparent focus:border-indigo-500 focus:ring-0 rounded-lg">
+                            <option value="mm:ss">MM:SS</option>
+                            <option value="hh:mm:ss">HH:MM:SS</option>
+                        </select>
+                    </div>
+                `;
+                
+                const customDistanceHTML = mode === 'custom' ? `
+                    <div class="mt-4">
+                        <label for="custom-distance" class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Distance</label>
+                        <div class="flex gap-2">
+                            <input type="number" id="custom-distance" min="0.1" max="1000" step="0.1" placeholder="e.g., 3.1" class="w-full ${commonInputClasses}">
+                            <select id="custom-distance-unit" class="bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg p-2 border-2 border-transparent focus:border-indigo-500 focus:ring-0">
+                                <option value="miles">mi</option>
+                                <option value="km">km</option>
+                            </select>
+                        </div>
+                        <div id="custom-distance-error" class="text-red-500 text-xs mt-1 h-4"></div>
+                    </div>
+                ` : '';
+
+
+                const fieldsHTML = `
+                    <input type="number" inputmode="numeric" id="timeInput-m" class="${commonInputClasses}" placeholder="${CONFIG.inputPlaceholders.m}" maxlength="3" data-next="timeInput-s" value="${m}">
+                    <span class="text-2xl font-bold text-slate-400">:</span>
+                    <input type="number" inputmode="numeric" id="timeInput-s" class="${commonInputClasses}" placeholder="${CONFIG.inputPlaceholders.s}" maxlength="2" value="${s}">
+                `;
+
+                return `
+                    <div class="wizard-step" data-step="2">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Step 2: Enter ${CONFIG.inputLabels[mode]}</h3>
+                            <div class="text-sm font-semibold text-slate-500 dark:text-slate-400">Step 2 of 2</div>
+                        </div>
+                        <div>
+                            ${timeFormatSelectorHTML}
+                            <div class="flex justify-between items-center mb-2">
+                                <label for="timeInput-m" class="block text-sm font-medium text-slate-600 dark:text-slate-400">Time</label>
+                                <div class="relative group">
+                                    <i class="ph-question text-slate-400 cursor-help"></i>
+                                    <span class="absolute bottom-full right-0 mb-2 w-48 p-2 bg-slate-800 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                        Enter your time in minutes and seconds.
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <i class="ph-timer absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 z-10"></i>
+                                <div class="flex items-center gap-2 pl-10 pc-time-input-group">
+                                    ${fieldsHTML}
+                                </div>
+                            </div>
+                            <div id="time-input-error" class="text-red-500 text-xs mt-1 h-4"></div>
+                            <a href="#" id="example-link" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">Show example</a>
+                        </div>
+                        ${customDistanceHTML}
+                        ${mode === 'pace' ? `
+                        <div>
+                            <label for="paceDistance" class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">For Distance</label>
+                            <select id="paceDistance" class="w-full p-3 bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white border-2 border-transparent focus:border-indigo-500 focus:ring-0 rounded-lg">
+                                <option value="fiveK">5K</option><option value="tenK">10K</option><option value="halfMarathon">Half Marathon</option><option value="marathon">Marathon</option>
+                            </select>
+                        </div>` : ''}
+                        <div id="action-buttons"></div>
+                        <button id="back-btn" class="mt-4 w-full flex items-center justify-center gap-2 bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-slate-200 font-bold py-3 px-6 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-500 transition">
+                            <i class="ph-arrow-left"></i><span>Back to Step 1</span>
+                        </button>
+                    </div>
+                `;
+            },
+            renderGoalPaceForm() {
+                DOMElements.goalPaceForm.innerHTML = `
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white">Interactive Goal Pace</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="goalDistanceSlider" class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">
+                                Distance: <span id="goalDistanceValue" class="font-bold text-indigo-600 dark:text-indigo-400">10 km</span>
+                            </label>
+                            <input id="goalDistanceSlider" type="range" min="0.1" max="50" value="10" step="0.1" class="w-full" aria-controls="goalPaceResult">
+                        </div>
+                        <div>
+                            <label for="goalTimeSlider" class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">
+                                Target Time: <span id="goalTimeValue" class="font-bold text-indigo-600 dark:text-indigo-400">45:00</span>
+                            </label>
+                            <input id="goalTimeSlider" type="range" min="12" max="7200" value="2700" step="1" class="w-full" aria-controls="goalPaceResult">
+                        </div>
+                    </div>
+                    <div id="goalPaceResult" class="space-y-2"></div>`;
+                
+                EventHandlers.handleGoalPace();
+            },
+            renderSettingsTab() {
+                const achievements = AppLogic.checkAchievements();
+                DOMElements.tabs.settings.content.innerHTML = `
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg space-y-8">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Personalization</h2>
+                            <div class="mb-4">
+                                <label for="userName" class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Name (for Pace Card)</label>
+                                <input id="userName" type="text" class="w-full p-3 bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white border-2 border-transparent focus:border-indigo-500 focus:ring-0 rounded-lg" placeholder="e.g., Alex">
+                            </div>
+                            <div class="mb-6">
+                                <label for="fontSizeSlider" class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Font Size</label>
+                                <input id="fontSizeSlider" type="range" min="12" max="20" value="${localStorage.getItem('fontSize') || 16}" class="w-full" aria-label="Adjust font size">
+                            </div>
+                        </div>
+                        <div>
+                           <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Achievements</h3>
+                           <div id="achievements-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                               ${achievements.map(a => `
+                               <div class="bg-slate-100 dark:bg-slate-700/50 p-4 rounded-xl flex items-center gap-4">
+                                   <i class="${a.icon} text-3xl ${a.color}"></i>
+                                   <div>
+                                       <p class="font-bold text-slate-800 dark:text-slate-200">${a.name}</p>
+                                       <p class="text-xs text-slate-500 dark:text-slate-400">${a.description}</p>
+                                   </div>
+                               </div>
+                               `).join('')}
+                           </div>
+                           ${achievements.length === 0 ? '<p class="text-center text-slate-500 dark:text-slate-400">No achievements yet. Keep tracking!</p>' : ''}
+                        </div>
+                        <div>
+                           <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Default Heart Rate Zones</h3>
+                           <div class="space-y-4">
+                               <div>
+                                   <label for="defaultMhr" class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Max Heart Rate (MHR)</label>
+                                   <div class="relative"><i class="ph-heart absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i><input id="defaultMhr" type="number" class="w-full pl-10 p-3 bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white border-2 border-transparent focus:border-indigo-500 focus:ring-0 rounded-lg" placeholder="e.g., 195"></div>
+                               </div>
+                               <div>
+                                   <label for="defaultLthr" class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Lactate Threshold HR (LTHR)</label>
+                                   <div class="relative"><i class="ph-activity absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i><input id="defaultLthr" type="number" class="w-full pl-10 p-3 bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white border-2 border-transparent focus:border-indigo-500 focus:ring-0 rounded-lg" placeholder="e.g., 178"></div>
+                               </div>
+                           </div>
+                        </div>
+                        <div>
+                            <details class="p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors duration-200">
+                                <summary class="font-semibold text-md cursor-pointer text-slate-800 dark:text-indigo-400 flex justify-between items-center">Advanced Settings <i class="ph-caret-down transition-transform"></i></summary>
+                                <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-600 space-y-6">
+                                    <div>
+                                        <h4 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Pace Card Customization</h4>
+                                        <div>
+                                            <label for="motivationalQuote" class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Motivational Quote</label>
+                                            <input id="motivationalQuote" type="text" class="w-full p-3 bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white border-2 border-transparent focus:border-indigo-500 focus:ring-0 rounded-lg" placeholder="e.g., Run your own race.">
+                                        </div>
+                                        <div class="mt-4">
+                                            <label class="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Paces to Show on Card</label>
+                                            <div id="pace-card-splits-list" class="grid grid-cols-2 gap-2"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                       <h4 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Custom Pace Splits</h4>
+                                       <div id="custom-splits-list" class="space-y-3"></div>
+                                       <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                           <input id="new-split-name" type="text" class="sm:col-span-2 w-full p-3 bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white border-2 border-transparent focus:border-indigo-500 focus:ring-0 rounded-lg" placeholder="Loop Name">
+                                           <input id="new-split-dist" type="number" class="w-full p-3 bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white border-2 border-transparent focus:border-indigo-500 focus:ring-0 rounded-lg" placeholder="Distance (meters)">
+                                       </div>
+                                       <button id="add-split-btn" class="mt-3 w-full flex items-center justify-center gap-2 bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition">
+                                           <i class="ph-plus-circle"></i> Add Custom Split
+                                       </button>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Tutorial</h4>
+                                        <button id="show-tutorial-btn" class="w-full flex items-center justify-center gap-2 bg-slate-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-slate-600 transition">
+                                            <i class="ph-info"></i><span>Show Tutorial Again</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </div>`;
+                
+                document.getElementById('userName').value = state.settings.name;
+                document.getElementById('defaultMhr').value = state.settings.hrData.mhr;
+                document.getElementById('defaultLthr').value = state.settings.hrData.lthr;
+                document.getElementById('motivationalQuote').value = state.settings.motivationalQuote;
+                this.renderCustomSplits();
+                this.renderPaceCardSplitOptions();
+            },
+            renderCustomSplits() {
+                const listEl = document.getElementById('custom-splits-list');
+                if(!listEl) return;
+                if(state.settings.customSplits.length === 0) {
+                    listEl.innerHTML = `<p class="text-sm text-slate-500 dark:text-slate-400 text-center">No custom splits added yet.</p>`;
+                    return;
+                }
+                listEl.innerHTML = state.settings.customSplits.map((split, index) => `
+                    <li class="flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-700/50 rounded-lg">
+                        <div>
+                            <p class="font-semibold text-slate-800 dark:text-slate-200">${split.label}</p>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">${split.dist} meters</p>
+                        </div>
+                        <button data-index="${index}" aria-label="Delete custom split ${split.label}" class="delete-split-btn text-slate-400 hover:text-red-500 dark:hover:text-red-400 p-2 rounded-full transition"><i class="ph-x text-xl"></i></button>
+                    </li>
+                `).join('');
+            },
+             renderPaceCardSplitOptions() {
+                const container = document.getElementById('pace-card-splits-list');
+                if (!container) return;
+                
+                const paces = CONFIG.allPaces.map(p => p.name);
+                container.innerHTML = paces.map(pace => {
+                    const isChecked = state.settings.paceCardSplits.includes(pace);
+                    return `
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" value="${pace}" class="pace-card-split-checkbox" ${isChecked ? 'checked' : ''}>
+                            <span class="text-sm text-slate-700 dark:text-slate-300">${pace}</span>
+                        </label>
+                    `;
+                }).join('');
+            }
+        };
+
+        const AppLogic = {
+            getTimeStringFromInputs(prefix) {
+                const mEl = document.getElementById(`${prefix}-m`);
+                const sEl = document.getElementById(`${prefix}-s`);
+                
+                const m = mEl ? mEl.value || '0' : '0';
+                const s = sEl ? sEl.value || '0' : '0';
+
+                return `${m}:${s}`;
+            },
+            analyzeHistory() {
+                if (state.history.length < 2) {
+                    return null;
+                }
+
+                const sortedHistory = [...state.history].sort((a, b) => new Date(a.date) - new Date(b.date));
+                const firstEntry = sortedHistory[0];
+                const lastEntry = sortedHistory[sortedHistory.length - 1];
+
+                const overallVdotChange = lastEntry.vdot - firstEntry.vdot;
+                const recentVdotChange = sortedHistory.length > 1 ? lastEntry.vdot - sortedHistory[sortedHistory.length - 2].vdot : null;
+                const bestVdotEntry = sortedHistory.reduce((max, entry) => entry.vdot > max.vdot ? entry : max, sortedHistory[0]);
+
+                const oneMonthAgo = new Date();
+                oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+                const lastMonthEntry = sortedHistory.find(entry => new Date(entry.date) <= oneMonthAgo);
+                const monthlyChange = lastMonthEntry ? lastEntry.vdot - lastMonthEntry.vdot : null;
+
+                const basisCounts = state.history.reduce((acc, entry) => {
+                    acc[entry.mode] = (acc[entry.mode] || 0) + 1;
+                    return acc;
+                }, {});
+                const mostCommonBasis = Object.keys(basisCounts).reduce((a, b) => basisCounts[a] > basisCounts[b] ? a : b, null);
+
+                return {
+                    overallVdotChange,
+                    recentVdotChange,
+                    bestVdotEntry,
+                    monthlyChange,
+                    mostCommonBasis,
+                };
+            },
+            checkAchievements() {
+                const achievements = [
+                    { 
+                        name: "Bear Conqueror",
+                        description: "Log a Bear Time under 7 minutes.",
+                        icon: "ph-mountains",
+                        color: "text-red-500",
+                        condition: state.history.some(h => h.mode === 'bear' && Calculations.timeToSec(h.timeStr) < 420) 
+                    },
+                    { 
+                        name: "Consistent Tracker",
+                        description: "Save 10 or more pace calculations.",
+                        icon: "ph-chart-line-up",
+                        color: "text-blue-500",
+                        condition: state.history.length >= 10 
+                    },
+                    { 
+                        name: "VDOT Improver",
+                        description: "Improve your VDOT by 2+ points.",
+                        icon: "ph-trend-up",
+                        color: "text-green-500",
+                        condition: state.history.length >= 2 && (state.history[state.history.length - 1].vdot - state.history[0].vdot) >= 2
+                    }
+                ];
+                return achievements.filter(a => a.condition);
+            },
+            calculateAndDisplay(isLive = false) {
+                const mode = state.selectedBasis;
+                const timeStr = this.getTimeStringFromInputs('timeInput');
+                
+                if (!isLive) {
+                    localStorage.setItem('lastInputs', JSON.stringify({ mode: state.selectedBasis, timeStr }));
+                }
+
+                const format = document.getElementById('timeFormat')?.value || 'mm:ss';
+                let totalTimeInSec, distanceMeters;
+
+                if (mode === 'pace') {
+                    const paceInSec = Calculations.timeToSec(timeStr, format);
+                    const paceDistanceKey = document.getElementById('paceDistance').value;
+                    distanceMeters = CONFIG.distMap[paceDistanceKey];
+                    totalTimeInSec = (paceInSec / METERS_PER_MILE) * distanceMeters;
+                } else if (mode === 'custom') {
+                    const distInput = document.getElementById('custom-distance');
+                    const distUnit = document.getElementById('custom-distance-unit').value;
+                    const customDist = parseFloat(distInput.value);
+
+                    if (isNaN(customDist) || customDist <= 0 || customDist > 1000) {
+                        if (!isLive) UI.showToast('Please enter a valid custom distance (0.1 - 1000).', 'error');
+                        distInput.classList.add('border-red-500');
+                        return;
+                    }
+                    distInput.classList.remove('border-red-500');
+                    distanceMeters = customDist * (distUnit === 'km' ? METERS_PER_KM : METERS_PER_MILE);
+                    totalTimeInSec = Calculations.timeToSec(timeStr, format);
+                } else {
+                    totalTimeInSec = Calculations.timeToSec(timeStr, format);
+                    distanceMeters = CONFIG.distMap[mode];
+                }
+                
+                const m = parseInt(document.getElementById('timeInput-m').value, 10);
+                if (m > 999) {
+                    if (!isLive) UI.showToast('Minutes must be between 0 and 999.', 'error');
+                    return;
+                }
+
+                if (!isLive && (isNaN(totalTimeInSec) || totalTimeInSec <= 0)) {
+                    UI.showModal(`
+                        <div class="p-6 text-center">
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Invalid Time</h3>
+                            <p class="text-slate-600 dark:text-slate-400 mb-6">Please enter a valid, positive time (e.g., 8:30).</p>
+                            <button id="modal-close-btn" class="w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition">OK</button>
+                        </div>
+                    `);
+                    return;
+                }
+                
+                DOMElements.resultsColumn.innerHTML = '<div class="flex justify-center items-center h-64"><i class="ph-spinner animate-spin text-4xl text-indigo-500"></i></div>';
+                
+                setTimeout(() => {
+                    let anchor5kTime;
+                    if (mode === 'bear') {
+                        anchor5kTime = Calculations.getInterpolated5kTime(totalTimeInSec, CONFIG.benchmarks);
+                    } else {
+                        const vdotForPace = Calculations.calculateVDOT(distanceMeters, totalTimeInSec);
+                        anchor5kTime = Calculations.calculateTimeFromVDOT(vdotForPace, CONFIG.distMap.fiveK);
+                    }
+                    
+                    const vdot = Calculations.calculateVDOT(CONFIG.distMap.fiveK, anchor5kTime);
+
+                    if (vdot <= 0 || !isFinite(vdot)) {
+                        UI.renderEmptyState();
+                        UI.showToast("Could not calculate a valid VDOT.", 'error');
+                        return;
+                    }
+                    
+                    state.latestCalculation = {
+                        id: Date.now(),
+                        date: new Date().toISOString(),
+                        mode, 
+                        timeStr, 
+                        dist: mode === 'pace' ? document.getElementById('paceDistance').value : mode,
+                        vdot: parseFloat(vdot.toFixed(1)),
+                        isSaved: false
+                    };
+
+                    UI.renderResults();
+                    UI.renderActionButtons('action-buttons');
+                }, 50);
+            },
+            savePace() {
+                if (!state.latestCalculation) {
+                    UI.showToast('No calculation to save.', 'error'); return;
+                }
+                if (state.latestCalculation.isSaved) {
+                    UI.showToast('This calculation has already been saved.', 'error'); return;
+                }
+
+                const action = { type: 'save', data: { ...state.latestCalculation } };
+                this.pushToUndoStack(action);
+                
+                state.history.push(state.latestCalculation);
+                state.latestCalculation.isSaved = true;
+                
+                this.saveHistoryToStorage();
+                UI.showToast('Pace saved to history!', 'success');
+                UI.renderActionButtons('action-buttons');
+            },
+            deleteHistoryItem(id) {
+                const itemToDelete = state.history.find(item => item.id === id);
+                if (itemToDelete) {
+                    const action = { type: 'delete', data: itemToDelete };
+                    this.pushToUndoStack(action);
+                }
+                
+                state.history = state.history.filter(item => item.id !== id);
+                this.saveHistoryToStorage();
+                UI.renderHistoryTab();
+                UI.showToast('Entry deleted.', 'success');
+            },
+            pushToUndoStack(action) {
+                state.undoStack.push(action);
+                if (state.undoStack.length > 5) {
+                    state.undoStack.shift();
+                }
+            },
+            undoLastAction() {
+                if (state.undoStack.length === 0) return;
+                const lastAction = state.undoStack.pop();
+
+                if (lastAction.type === 'save') {
+                    state.history.pop();
+                    if (state.latestCalculation && state.latestCalculation.id === lastAction.data.id) {
+                        state.latestCalculation.isSaved = false;
+                    }
+                    UI.showToast('Save undone!', 'success');
+                } else if (lastAction.type === 'delete') {
+                    state.history.push(lastAction.data);
+                    UI.showToast('Delete undone!', 'success');
+                }
+                this.saveHistoryToStorage();
+                UI.renderActionButtons('action-buttons');
+                if (DOMElements.tabs.history.content.classList.contains('active')) {
+                    UI.renderHistoryTab();
+                }
+            },
+            clearHistory() {
+                state.history = [];
+                this.saveHistoryToStorage();
+                UI.renderHistoryTab();
+            },
+            saveHistoryToStorage() {
+                localStorage.setItem('paceCalcHistory', JSON.stringify(state.history));
+            },
+            loadHistoryFromStorage() {
+                const storedHistory = localStorage.getItem('paceCalcHistory');
+                state.history = storedHistory ? JSON.parse(storedHistory) : [];
+            },
+            sortHistory() {
+                const { by, order } = state.settings.historySort;
+                const sorted = [...state.history].sort((a, b) => {
+                    let valA, valB;
+                    if (by === 'date') {
+                        valA = new Date(a.date);
+                        valB = new Date(b.date);
+                    } else if (by === 'vdot') {
+                        valA = a.vdot;
+                        valB = b.vdot;
+                    } else { // mode
+                        valA = a.mode;
+                        valB = b.mode;
+                    }
+
+                    if (valA < valB) return -1;
+                    if (valA > valB) return 1;
+                    return 0;
+                });
+
+                if (order === 'desc') {
+                    sorted.reverse();
+                }
+                return sorted;
+            },
+            saveSettings() {
+                state.settings.name = document.getElementById('userName').value;
+                state.settings.hrData.mhr = document.getElementById('defaultMhr').value;
+                state.settings.hrData.lthr = document.getElementById('defaultLthr').value;
+                state.settings.motivationalQuote = document.getElementById('motivationalQuote').value;
+                
+                const unitPref = document.getElementById('unit-toggle');
+                if (unitPref) {
+                    state.settings.displayUnit = unitPref.value;
+                    localStorage.setItem('paceCalcUnit', unitPref.value);
+                }
+                
+                const selectedSplits = [];
+                document.querySelectorAll('.pace-card-split-checkbox:checked').forEach(checkbox => {
+                    selectedSplits.push(checkbox.value);
+                });
+                state.settings.paceCardSplits = selectedSplits;
+
+                localStorage.setItem('paceCalcSettings', JSON.stringify(state.settings));
+                UI.showToast('Settings saved!', 'success');
+                if (state.latestCalculation) {
+                    UI.renderResults();
+                }
+            },
+            loadSettings() {
+                const storedSettings = localStorage.getItem('paceCalcSettings');
+                if(storedSettings) {
+                    const loaded = JSON.parse(storedSettings);
+                    state.settings = { ...state.settings, ...loaded };
+                }
+            },
+            addCustomSplit() {
+                const nameInput = document.getElementById('new-split-name');
+                const distInput = document.getElementById('new-split-dist');
+                const name = nameInput.value.trim();
+                const dist = parseInt(distInput.value, 10);
+                if (name && dist > 0) {
+                    state.settings.customSplits.push({ label: name, dist });
+                    this.saveSettings();
+                    UI.renderCustomSplits();
+                    nameInput.value = '';
+                    distInput.value = '';
+                } else {
+                    UI.showToast('Please enter a valid name and distance.', 'error');
+                }
+            },
+            deleteCustomSplit(index) {
+                state.settings.customSplits.splice(index, 1);
+                this.saveSettings();
+                UI.renderCustomSplits();
+            },
+            getHRZone(paceName) {
+                const { mhr, lthr } = state.settings.hrData;
+                if (!mhr && !lthr) return 'N/A';
+                
+                let base, zones;
+                if (lthr) {
+                    base = lthr;
+                    zones = CONFIG.hrZones.lthr;
+                } else {
+                    base = mhr;
+                    zones = CONFIG.hrZones.mhr;
+                }
+
+                const zone = zones.find(z => z.name === paceName);
+                if (!zone) return 'N/A';
+
+                const low = Math.round(base * zone.low);
+                const high = Math.round(base * zone.high);
+                return `${low} - ${high}`;
+            },
+            copyTable() {
+                const table = document.getElementById("paceTable");
+                if (!table || !table.querySelector('tbody').hasChildNodes()) {
+                    UI.showToast('Please calculate paces first.', 'error'); return;
+                }
+                let textToCopy = '';
+                const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.innerText);
+                textToCopy += headers.join('\t') + '\n';
+                
+                table.querySelectorAll('tbody tr').forEach(row => {
+                    const cells = Array.from(row.querySelectorAll('td')).map(td => td.innerText);
+                    textToCopy += cells.join('\t') + '\n';
+                });
+                
+                const textarea = document.createElement('textarea');
+                textarea.value = textToCopy;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    UI.showToast('Table copied to clipboard!');
+                } catch (e) {
+                    console.error("Copy failed", e);
+                    UI.showToast('Could not copy table.', 'error');
+                }
+                document.body.removeChild(textarea);
+            },
+            generateShareLink() {
+                if (!state.latestCalculation) return;
+                const params = new URLSearchParams({
+                    vdot: state.latestCalculation.vdot,
+                    mhr: state.settings.hrData.mhr || '',
+                    lthr: state.settings.hrData.lthr || ''
+                });
+                const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+                const text = `Just hit a VDOT of ${state.latestCalculation.vdot} with the Bears TC Pace Calculator! 🏃‍♂️ #Running`;
+                const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+
+                const modalHTML = `
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Share Calculation</h4>
+                    <p class="text-slate-600 dark:text-slate-400 mb-4">Copy this link to share your results or post to X.</p>
+                    <div class="relative">
+                        <input id="share-link-input" type="text" class="w-full p-3 pr-24 bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white border-2 border-slate-200 dark:border-slate-600 rounded-lg" value="${url}" readonly>
+                        <button id="modal-copy-btn" class="absolute right-1 top-1/2 -translate-y-1/2 flex items-center justify-center gap-2 bg-indigo-600 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-700 transition">
+                            <i class="ph-copy"></i><span>Copy</span>
+                        </button>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-3 mt-6">
+                        <button id="modal-close-btn" class="w-full text-center bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-slate-200 font-bold py-3 px-6 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-500 transition">Close</button>
+                        <a href="${twitterUrl}" target="_blank" class="w-full flex items-center justify-center gap-2 bg-black text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-gray-800 transition">
+                           <i class="ph-x-logo"></i><span>Post to X</span>
+                        </a>
+                    </div>
+                `;
+
+                UI.showModal(modalHTML);
+            },
+            applyUrlParams() {
+                const params = new URLSearchParams(window.location.search);
+                const vdot = parseFloat(params.get('vdot'));
+                const mhr = params.get('mhr');
+                const lthr = params.get('lthr');
+
+                if (vdot) {
+                    state.latestCalculation = {
+                        id: Date.now(),
+                        date: new Date().toISOString(),
+                        vdot: vdot,
+                        isSaved: false
+                    };
+                    if (mhr) state.settings.hrData.mhr = mhr;
+                    if (lthr) state.settings.hrData.lthr = lthr;
+                    
+                    UI.renderResults();
+                    state.currentStep = 2;
+                    UI.renderCalculatorStep();
+                }
+            },
+            generatePaceCard() {
+                if (typeof html2canvas === 'undefined' || typeof QRCode === 'undefined') {
+                    UI.showToast('Pace card feature is currently unavailable. Please try again later.', 'error');
+                    console.error('html2canvas or QRCode library not loaded.');
+                    return;
+                }
+
+                if (!state.paceCardData) {
+                    UI.showToast('Please calculate your paces first.', 'error');
+                    return;
+                }
+
+                const vdot = state.paceCardData.vdot;
+                
+                const raceEquivalents = [
+                    { name: "The Bear", type: 'special' }, { name: "Palmer Lake 4 Miler", dist: CONFIG.distMap.palmerLake, type: 'vdot' },
+                    { name: "10K", dist: CONFIG.distMap.tenK, type: 'vdot' }, { name: "5K", dist: CONFIG.distMap.fiveK, type: 'vdot' },
+                    { name: "3200m", dist: CONFIG.distMap.threeTwo, type: 'vdot' }, { name: "1600m", dist: CONFIG.distMap.oneSix, type: 'vdot' }
+                ];
+                
+                const raceEquivalentsHTML = raceEquivalents.map(race => {
+                    let predTimeSec;
+                    if (race.type === 'special' && race.name === 'The Bear') {
+                        const anchor5kTime = Calculations.calculateTimeFromVDOT(vdot, CONFIG.distMap.fiveK);
+                        predTimeSec = Calculations.getInterpolatedBearTime(anchor5kTime, CONFIG.benchmarks);
+                    } else {
+                        predTimeSec = Calculations.calculateTimeFromVDOT(vdot, race.dist);
+                    }
+                    return `<div><div style="font-weight: 600;">${race.name}</div><div style="font-family: monospace; font-weight: 700;">${Calculations.secToHMS(predTimeSec)}</div></div>`;
+                }).join('');
+
+                const equivalentsSectionHTML = `
+                    <div style="margin-top: 16px; text-align: center;">
+                        <h3 style="font-size: 16px; font-weight: 700; margin: 0 0 8px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">Race Equivalents</h3>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 14px;">
+                           ${raceEquivalentsHTML}
+                        </div>
+                    </div>
+                `;
+
+                const paceOrder = state.settings.paceCardSplits.length > 0 ? state.settings.paceCardSplits : ["Recovery", "Foundation", "Steady", "Tempo", "Lactate Threshold", "CV", "10K", "5K", "3200m", "1600m"];
+                const splitHeaders = CONFIG.defaultSplitDistances;
+                const splitsTableHTML = `
+                    <div style="margin-top: 16px;">
+                        <h3 style="font-size: 16px; font-weight: 700; margin: 0 0 8px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">Interval Splits</h3>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 10px; text-align: center;">
+                            <thead>
+                                <tr style="background-color: #f8fafc;">
+                                    <th style="text-align: left; padding: 4px; font-weight: 600;">Zone/Race</th>
+                                    ${splitHeaders.map(h => `<th style="padding: 4px; font-weight: 600;">${h.label}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                            ${paceOrder.map((name, index) => {
+                                const paceData = state.paceCardData.paces[name];
+                                if (!paceData || !paceData.medianPacePerMeter) return '';
+                                const bgColor = index % 2 === 0 ? '#ffffff' : '#f8fafc';
+                                return `<tr style="background-color: ${bgColor};">
+                                    <td style="text-align: left; font-weight: 600; padding: 4px;">${name}</td>
+                                    ${splitHeaders.map(h => {
+                                        const pace = Calculations.secToPace(paceData.medianPacePerMeter * h.dist);
+                                        return `<td style="font-family: monospace; padding: 4px;">${pace || '-'}</td>`;
+                                    }).join('')}
+                                </tr>`;
+                            }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                const userName = state.settings.name ? `${state.settings.name}'s` : 'My';
+                const quoteHTML = state.settings.motivationalQuote ? `<p style="font-style: italic; text-align: center; margin-top: 16px; font-size: 12px; color: #475569;">"${state.settings.motivationalQuote}"</p>` : '';
+
+                const modalHTML = `
+                    <div id="printable-area" class="bg-white dark:bg-slate-900 p-5">
+                        <div style="font-family: Inter, sans-serif; color: #111; width: 100%; max-width: 600px; margin: auto; background-color: white; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <div style="text-align: left;">
+                                    <img src="https://placehold.co/60x60/1e293b/ffffff?text=Bears" alt="Bears TC Logo" style="width: 60px; height: auto; border-radius: 50%;">
+                                    <h2 style="font-size: 20px; font-weight: 800; margin: 8px 0 0 0;">${userName} Pace Card</h2>
+                                    <div style="background-color: #f1f5f9; border-radius: 8px; padding: 8px; text-align: center; margin-top: 8px;">
+                                        <span style="font-size: 12px; color: #475569;">Your VDOT is</span>
+                                        <span style="font-size: 20px; font-weight: 700; color: #4f46e5; display: block;">${state.paceCardData.vdot}</span>
+                                    </div>
+                                </div>
+                                <div id="qrcode-container" style="text-align: right; min-width: 80px; min-height: 80px;"></div>
+                            </div>
+                            
+                            ${equivalentsSectionHTML}
+                            ${splitsTableHTML}
+                            ${quoteHTML}
+                        </div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-3 mt-6 pc-no-print">
+                        <button id="modal-cancel-btn" class="w-full text-center bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-slate-200 font-bold py-3 px-6 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-500 transition">Close</button>
+                        <button id="modal-download-btn" class="w-full flex items-center justify-center gap-2 bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-green-700 transition"><i class="ph-download"></i><span>Download</span></button>
+                        <button id="modal-print-btn" class="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-indigo-700 transition"><i class="ph-printer"></i><span>Print</span></button>
+                    </div>`;
+
+                UI.showModal(modalHTML);
+                
+                try {
+                    const shareUrl = `${window.location.origin}${window.location.pathname}?vdot=${state.latestCalculation.vdot}`;
+                    const qrContainer = document.getElementById('qrcode-container');
+                    if (qrContainer) {
+                        QRCode.toCanvas(qrContainer, shareUrl, { width: 80, margin: 1, color: { dark: '#000000', light: '#ffffff' } }, function (error) {
+                            if (error) {
+                                console.error('QR Code generation error:', error);
+                                UI.showToast('Could not generate QR code.', 'error');
+                                qrContainer.innerHTML = '<p class="text-xs text-red-500">QR Error</p>';
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error('QR Code execution failed:', error);
+                    UI.showToast('Could not generate QR code.', 'error');
+                }
+            },
+            showTutorial() {
+                UI.showModal(`
+                    <div class="p-6 text-center">
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Welcome to the Bears TC Pace Calculator!</h3>
+                        <ol class="text-slate-600 dark:text-slate-400 mb-6 text-left space-y-2">
+                            <li><b>1. Select a Basis:</b> Choose a recent race or time trial (like 'Bear Time').</li>
+                            <li><b>2. Enter Your Time:</b> Input your performance time.</li>
+                            <li><b>3. Calculate & Review:</b> Get your equivalent paces for training and other races.</li>
+                            <li><b>4. Save & Track:</b> Use the 'History' and 'Settings' tabs to track progress and personalize your experience.</li>
+                        </ol>
+                        <button id="modal-close-btn" class="w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition">Get Started</button>
+                    </div>
+                `);
+                localStorage.setItem('seenTutorial', 'true');
+            },
+            exportHistory() {
+                if (state.history.length === 0) {
+                    UI.showToast('No history to export.', 'error');
+                    return;
+                }
+                try {
+                    const dataStr = JSON.stringify(state.history, null, 2);
+                    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                    const exportFileDefaultName = 'bears_tc_history.json';
+                    const linkElement = document.createElement('a');
+                    linkElement.setAttribute('href', dataUri);
+                    linkElement.setAttribute('download', exportFileDefaultName);
+                    document.body.appendChild(linkElement);
+                    linkElement.click();
+                    document.body.removeChild(linkElement);
+                    UI.showToast('History exported successfully!', 'success');
+                } catch (error) {
+                    console.error('Export failed:', error);
+                    UI.showToast('Could not export history.', 'error');
+                }
+            },
+            importHistory() {
+                try {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = '.json,application/json';
+                    input.onchange = e => {
+                        const file = e.target.files[0];
+                        if (!file) return;
+                        const reader = new FileReader();
+                        reader.onload = readerEvent => {
+                            try {
+                                const content = readerEvent.target.result;
+                                const importedHistory = JSON.parse(content);
+                                
+                                if (!Array.isArray(importedHistory) || importedHistory.some(item => typeof item.id === 'undefined' || typeof item.date === 'undefined' || typeof item.vdot === 'undefined')) {
+                                    throw new Error('Invalid file format.');
+                                }
+                                
+                                const existingIds = new Set(state.history.map(item => item.id));
+                                const newItems = importedHistory.filter(item => !existingIds.has(item.id));
+                                
+                                if (newItems.length > 0) {
+                                    state.history.push(...newItems);
+                                    this.saveHistoryToStorage();
+                                    UI.renderHistoryTab();
+                                    UI.showToast(`${newItems.length} new entries imported.`, 'success');
+                                } else {
+                                    UI.showToast('No new entries to import.', 'success');
+                                }
+                            } catch (error) {
+                                UI.showToast(`Import failed: ${error.message}`, 'error');
+                                console.error('Import process failed:', error);
+                            }
+                        };
+                        reader.onerror = () => {
+                             UI.showToast('Failed to read file.', 'error');
+                        }
+                        reader.readAsText(file);
+                    };
+                    input.click();
+                } catch (error) {
+                    console.error('Import setup failed:', error);
+                    UI.showToast('Could not start import process.', 'error');
+                }
+            },
+        };
+
+        const EventHandlers = {
+            init() {
+                DOMElements.wrapper.addEventListener('click', this.handleWrapperClick.bind(this));
+                DOMElements.wrapper.addEventListener('change', this.handleWrapperChange.bind(this));
+                DOMElements.wrapper.addEventListener('input', this.handleWrapperInput.bind(this));
+                DOMElements.wrapper.addEventListener('keyup', this.handleWrapperKeyup.bind(this));
+                DOMElements.wrapper.addEventListener('mouseover', this.handleWrapperMouseOver.bind(this));
+                DOMElements.wrapper.addEventListener('mouseout', this.handleWrapperMouseOut.bind(this));
+
+                DOMElements.modalOverlay.addEventListener('click', (e) => { if (e.target === DOMElements.modalOverlay) UI.hideModal(); });
+                
+                window.addEventListener('resize', () => {
+                    if (DOMElements.tabs.history.content.classList.contains('active')) {
+                        UI.renderProgressChart();
+                    }
+                });
+                
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && state.currentStep === 2) {
+                        e.preventDefault();
+                        AppLogic.calculateAndDisplay();
+                    }
+                    if (e.key === 'Escape') {
+                        if (DOMElements.modalOverlay.style.display === 'block') {
+                            UI.hideModal();
+                        } else if (state.currentStep === 2) {
+                            document.getElementById('timeInput-m').value = '';
+                            document.getElementById('timeInput-s').value = '';
+                            UI.renderEmptyState();
+                            UI.renderActionButtons('action-buttons');
+                        }
+                    }
+                });
+
+                const hammer = new Hammer(DOMElements.wrapper);
+                hammer.on('swipeleft', () => {
+                    const tabs = ['calc', 'history', 'settings'];
+                    const current = tabs.findIndex(t => DOMElements.tabs[t].content.classList.contains('active'));
+                    if (current < tabs.length - 1) UI.switchTab(tabs[current + 1]);
+                });
+                hammer.on('swiperight', () => {
+                    const tabs = ['calc', 'history', 'settings'];
+                    const current = tabs.findIndex(t => DOMElements.tabs[t].content.classList.contains('active'));
+                    if (current > 0) UI.switchTab(tabs[current - 1]);
+                });
+            },
+            handleWrapperClick(e) {
+                const target = e.target;
+                const closest = (selector) => target.closest(selector);
+
+                if (closest('#darkToggle')) { UI.setDarkMode(!state.isDark); return; }
+                
+                if (closest('#tab-calc-btn')) { UI.switchTab('calc'); return; }
+                if (closest('#tab-history-btn')) { UI.switchTab('history'); return; }
+                if (closest('#tab-settings-btn')) { UI.switchTab('settings'); return; }
+
+                if (closest('#next-step-btn')) {
+                    state.selectedBasis = document.querySelector('input[name="mode"]:checked').value;
+                    localStorage.setItem('paceCalcBasis', state.selectedBasis);
+                    state.currentStep = 2;
+                    UI.renderCalculatorStep();
+                    return;
+                }
+                if (closest('#back-btn')) {
+                    state.currentStep = 1;
+                    UI.renderCalculatorStep();
+                    return;
+                }
+                if (closest('#example-link')) {
+                    e.preventDefault();
+                    const example = CONFIG.exampleTimes[state.selectedBasis];
+                    if (example) {
+                        document.getElementById('timeInput-m').value = example.m;
+                        document.getElementById('timeInput-s').value = example.s;
+                        AppLogic.calculateAndDisplay(true);
+                    }
+                }
+
+                if (closest('#calc-btn')) { AppLogic.calculateAndDisplay(); return; }
+                if (closest('#savePaceBtn')) { AppLogic.savePace(); return; }
+                if (closest('#copyTableBtn')) { AppLogic.copyTable(); return; }
+                if (closest('#generatePaceCardBtn')) { AppLogic.generatePaceCard(); return; }
+                if (closest('#shareBtn')) { AppLogic.generateShareLink(); return; }
+                
+                if (closest('#reset-btn')) {
+                    document.getElementById('timeInput-m').value = '';
+                    document.getElementById('timeInput-s').value = '';
+                    state.latestCalculation = null;
+                    UI.renderEmptyState();
+                    UI.renderActionButtons('action-buttons');
+                    return;
+                }
+                
+                if (closest('#undo-btn')) { AppLogic.undoLastAction(); return; }
+
+                if (closest('#clearHistoryBtn')) { this.handleClearHistory(); return; }
+                const deleteHistoryBtn = closest('.delete-history-btn');
+                if (deleteHistoryBtn) {
+                    const id = parseInt(deleteHistoryBtn.dataset.id, 10);
+                    AppLogic.deleteHistoryItem(id);
+                    return;
+                }
+
+                if (closest('#add-split-btn')) { AppLogic.addCustomSplit(); return; }
+                const deleteSplitBtn = closest('.delete-split-btn');
+                if (deleteSplitBtn) {
+                    AppLogic.deleteCustomSplit(deleteSplitBtn.dataset.index);
+                    return;
+                }
+
+                if (closest('#modal-close-btn') || closest('#modal-cancel-btn')) { UI.hideModal(); return; }
+                if (closest('#modal-print-btn')) { window.print(); return; }
+                if (closest('#modal-download-btn')) {
+                    const printableArea = document.getElementById('printable-area');
+                    html2canvas(printableArea.querySelector('div'), { backgroundColor: '#ffffff' }).then(canvas => {
+                        const link = document.createElement('a');
+                        link.download = `pace-card-vdot-${state.paceCardData.vdot}.png`;
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                    }).catch(err => {
+                        console.error('html2canvas failed:', err);
+                        UI.showToast('Could not download pace card.', 'error');
+                    });
+                    return;
+                }
+                const modalCopyBtn = closest('#modal-copy-btn');
+                if (modalCopyBtn) {
+                    const input = document.getElementById('share-link-input');
+                    input.select();
+                    input.setSelectionRange(0, 99999); 
+                    try {
+                        document.execCommand('copy');
+                        modalCopyBtn.innerHTML = '<i class="ph-check"></i><span>Copied!</span>';
+                        setTimeout(() => { modalCopyBtn.innerHTML = '<i class="ph-copy"></i><span>Copy</span>'; }, 2000);
+                    } catch (err) { UI.showToast('Could not copy link.', 'error'); }
+                }
+
+                if (closest('#exportHistoryBtn')) { AppLogic.exportHistory(); return; }
+                if (closest('#importHistoryBtn')) { AppLogic.importHistory(); return; }
+                if (closest('#show-tutorial-btn')) { AppLogic.showTutorial(); return; }
+            },
+            handleWrapperChange(e) {
+                if (e.target.name === 'mode') {
+                    state.selectedBasis = e.target.value;
+                }
+                 if (e.target.id === 'paceDistance' || e.target.id === 'timeFormat' || e.target.id === 'unit-toggle') {
+                    if (e.target.id === 'unit-toggle') {
+                        state.settings.displayUnit = e.target.value;
+                        localStorage.setItem('paceCalcUnit', e.target.value);
+                    }
+                    if (state.latestCalculation) {
+                        UI.renderResults();
+                    }
+                }
+                if(e.target.classList.contains('pace-card-split-checkbox')) {
+                    AppLogic.saveSettings();
+                }
+                if (e.target.id === 'history-sort-by' || e.target.id === 'history-sort-order') {
+                    state.settings.historySort.by = document.getElementById('history-sort-by').value;
+                    state.settings.historySort.order = document.getElementById('history-sort-order').value;
+                    AppLogic.saveSettings();
+                    UI.renderHistoryList();
+                }
+            },
+            handleWrapperInput(e) {
+                const target = e.target;
+                const targetId = target.id;
+                
+                if (targetId.startsWith('timeInput-')) {
+                    const mInput = document.getElementById('timeInput-m');
+                    const sInput = document.getElementById('timeInput-s');
+                    const errorEl = document.getElementById('time-input-error');
+
+                    const m = parseInt(mInput.value, 10);
+                    const s = parseInt(sInput.value, 10);
+
+                    let isValid = true;
+                    if (m < 0 || m > 999) {
+                        mInput.classList.add('border-red-500');
+                        if(errorEl) errorEl.textContent = "Minutes must be 0-999.";
+                        isValid = false;
+                    } else {
+                        mInput.classList.remove('border-red-500');
+                    }
+
+                    if (s < 0 || s > 59) {
+                        sInput.classList.add('border-red-500');
+                        if(errorEl) errorEl.textContent = "Seconds must be 0-59.";
+                        isValid = false;
+                    } else {
+                        sInput.classList.remove('border-red-500');
+                    }
+
+                    if (isValid && errorEl) errorEl.textContent = "";
+
+                    clearTimeout(state.debounceTimer);
+                    state.debounceTimer = setTimeout(() => {
+                        if (mInput.value && sInput.value && isValid) {
+                            AppLogic.calculateAndDisplay(true);
+                        }
+                    }, 300);
+
+                    const nextId = target.dataset.next;
+                    if (target.value.length >= target.maxLength && nextId) {
+                        document.getElementById(nextId)?.focus();
+                    }
+                }
+                
+                if (targetId === 'goalDistanceSlider' || targetId === 'goalTimeSlider') {
+                    this.handleGoalPace();
+                }
+
+                if (targetId === 'userName' || targetId === 'defaultMhr' || targetId === 'defaultLthr' || targetId === 'motivationalQuote') {
+                    AppLogic.saveSettings();
+                }
+
+                if (targetId === 'fontSizeSlider') {
+                    DOMElements.wrapper.style.fontSize = `${target.value}px`;
+                    localStorage.setItem('fontSize', target.value);
+                }
+            },
+            handleWrapperKeyup(e) {
+                const target = e.target;
+                const targetId = target.id;
+                if (e.key === 'Backspace' && target.value.length === 0) {
+                    if (targetId === 'timeInput-s') document.getElementById('timeInput-m')?.focus();
+                    if (targetId === 'goalTime-s') document.getElementById('goalTime-m')?.focus();
+                }
+                if (['ArrowUp', 'ArrowDown'].includes(e.key) && target.type === 'range') {
+                    target.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            },
+            handleWrapperMouseOver(e) {
+                const chartDot = e.target.closest('.chart-dot');
+                if(chartDot) {
+                    const tooltipEl = document.getElementById('chartTooltip');
+                    const historyData = [...state.history].sort((a,b) => new Date(a.date) - new Date(b.date));
+                    const index = chartDot.getAttribute('data-index');
+                    const data = historyData[index];
+                    const date = new Date(data.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    tooltipEl.innerHTML = `<strong>VDOT: ${data.vdot}</strong><br>${date}`;
+                    tooltipEl.style.opacity = '1';
+                    const x = parseFloat(chartDot.getAttribute('cx'));
+                    const y = parseFloat(chartDot.getAttribute('cy'));
+                    tooltipEl.style.left = `${x}px`;
+                    tooltipEl.style.top = `${y - 40}px`;
+                    chartDot.setAttribute('r', '7');
+                }
+            },
+            handleWrapperMouseOut(e) {
+                const chartDot = e.target.closest('.chart-dot');
+                if(chartDot) {
+                    document.getElementById('chartTooltip').style.opacity = '0';
+                    chartDot.setAttribute('r', '5');
+                }
+            },
+            handleGoalPace() {
+                const distSlider = document.getElementById("goalDistanceSlider");
+                const timeSlider = document.getElementById("goalTimeSlider");
+                const distValueEl = document.getElementById("goalDistanceValue");
+                const timeValueEl = document.getElementById("goalTimeValue");
+                const resultDiv = document.getElementById("goalPaceResult");
+
+                if (!distSlider || !timeSlider) return;
+
+                const distance = parseFloat(distSlider.value);
+                const timeInSec = parseInt(timeSlider.value, 10);
+                
+                distValueEl.textContent = `${distance.toFixed(1)} km`;
+                timeValueEl.textContent = Calculations.secToPace(timeInSec);
+
+                const distanceMeters = distance * 1000;
+                const pacePerMile = (timeInSec / distanceMeters) * METERS_PER_MILE;
+                const splits = [200, 400, 800, 1000, 1200, 1600].map(d => ({
+                    name: `${d}m`,
+                    value: Calculations.secToPace((timeInSec / distanceMeters) * d, 'meters')
+                }));
+                splits.unshift({ name: 'Pace / mi', value: Calculations.secToPace(pacePerMile, 'miles') });
+                splits.unshift({ name: 'Pace / km', value: Calculations.secToPace(pacePerMile, 'km') });
+
+                resultDiv.innerHTML = `<h4 class="text-lg font-bold text-slate-900 dark:text-white">Required Splits:</h4><p class="text-sm text-slate-500 dark:text-slate-400">To run ${distance.toFixed(1)} km in ${Calculations.secToHMS(timeInSec)}, you need a ${Calculations.secToPace(pacePerMile, 'miles')}/mi pace.</p><ul class="grid grid-cols-2 gap-x-4 gap-y-2 mt-4 text-sm">${splits.map(s => `<li class="flex justify-between border-b border-dashed border-slate-200 dark:border-slate-700 py-1"><span class="font-semibold text-slate-700 dark:text-slate-300">${s.name}:</span><span class="font-mono font-bold text-slate-900 dark:text-white">${s.value}</span></li>`).join('')}</ul>`;
+                resultDiv.classList.remove("hidden");
+            },
+            handleClearHistory() {
+                const modalHTML = `<h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Clear History</h4><p class="text-slate-600 dark:text-slate-400 mb-6">Are you sure you want to delete all saved history? This cannot be undone.</p><div class="flex gap-3"><button id="modal-cancel-btn" class="w-full text-center bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-slate-200 font-bold py-3 px-6 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-500 transition">Cancel</button><button id="modal-confirm-clear-btn" class="w-full bg-red-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-red-700 transition">Yes, Clear</button></div>`;
+                UI.showModal(modalHTML);
+                 document.getElementById('modal-confirm-clear-btn').addEventListener('click', () => {
+                    AppLogic.clearHistory();
+                    UI.hideModal();
+                    UI.showToast('History Cleared!', 'success');
+                }, { once: true });
+            },
+        };
+
+        function init() {
+            const prefersDark = localStorage.getItem('paceCalcDarkMode') === 'true' || 
+                (localStorage.getItem('paceCalcDarkMode') === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            UI.setDarkMode(prefersDark, false); 
+            
+            AppLogic.loadHistoryFromStorage();
+            AppLogic.loadSettings();
+            
+            const lastInputs = JSON.parse(localStorage.getItem('lastInputs') || '{}');
+            state.selectedBasis = lastInputs.mode || state.selectedBasis;
+            const fontSize = localStorage.getItem('fontSize') || '16';
+            DOMElements.wrapper.style.fontSize = `${fontSize}px`;
+            
+            UI.renderCalculatorStep();
+            UI.renderGoalPaceForm();
+            UI.renderInfo();
+            UI.renderEmptyState();
+            
+            EventHandlers.init();
+
+            AppLogic.applyUrlParams();
+
+            if (!localStorage.getItem('seenTutorial')) {
+                AppLogic.showTutorial();
+            }
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+    })();
+</script>
+
+</body>
+</html>

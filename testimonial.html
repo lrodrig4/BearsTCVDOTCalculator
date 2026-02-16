@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share Your Experience — Bears Track Club</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --navy: #1a2744;
+            --gold: #d4a843;
+            --gold-light: #f0d78c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f1a2e 0%, #1a2744 50%, #243352 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .container {
+            background: white;
+            border-radius: 1.25rem;
+            max-width: 580px;
+            width: 100%;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: var(--navy);
+            padding: 2rem 2rem 1.5rem;
+            text-align: center;
+        }
+
+        .header img {
+            height: 4.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .header h1 {
+            font-family: 'Oswald', sans-serif;
+            color: white;
+            font-size: 1.5rem;
+            letter-spacing: 0.03em;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            margin-top: 0.35rem;
+        }
+
+        /* ── Form ── */
+        .form-section {
+            padding: 2rem;
+        }
+
+        .form-section h2 {
+            color: var(--navy);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .form-section .subtitle {
+            color: #64748b;
+            font-size: 0.8rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .field {
+            margin-bottom: 1.25rem;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 0.35rem;
+        }
+
+        .field label .required {
+            color: #ef4444;
+        }
+
+        .field input,
+        .field select,
+        .field textarea {
+            width: 100%;
+            padding: 0.65rem 0.85rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fafbfc;
+        }
+
+        .field input:focus,
+        .field select:focus,
+        .field textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.15);
+            background: white;
+        }
+
+        .field textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .stars {
+            display: flex;
+            gap: 0.35rem;
+            margin-top: 0.25rem;
+        }
+
+        .stars .star {
+            font-size: 1.75rem;
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: color 0.15s, transform 0.15s;
+        }
+
+        .stars .star:hover,
+        .stars .star.active {
+            color: var(--gold);
+            transform: scale(1.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 0.85rem;
+            background: var(--navy);
+            color: white;
+            border: none;
+            border-radius: 0.6rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        .submit-btn:hover {
+            background: #243352;
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        .privacy-note {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #94a3b8;
+            margin-top: 0.75rem;
+        }
+
+        /* ── Thank You ── */
+        .thank-you {
+            display: none;
+            padding: 2.5rem 2rem;
+            text-align: center;
+        }
+
+        .thank-you.show {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .thank-you .check-circle {
+            width: 4.5rem;
+            height: 4.5rem;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.25rem;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .thank-you .check-circle i {
+            font-size: 2rem;
+            color: white;
+        }
+
+        .thank-you h2 {
+            color: var(--navy);
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .thank-you .message {
+            color: #64748b;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin-bottom: 1.75rem;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #e2e8f0;
+            margin: 1.5rem 0;
+        }
+
+        .google-section h3 {
+            color: var(--navy);
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.35rem;
+        }
+
+        .google-section p {
+            color: #64748b;
+            font-size: 0.8rem;
+            margin-bottom: 1.25rem;
+            line-height: 1.5;
+        }
+
+        .google-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.85rem 2rem;
+            background: linear-gradient(135deg, #4285f4, #3367d6);
+            color: white;
+            text-decoration: none;
+            border-radius: 0.6rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
+        }
+
+        .google-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4);
+        }
+
+        .google-btn i {
+            font-size: 1.1rem;
+        }
+
+        .copy-hint {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #fefce8;
+            border: 1px solid #fde68a;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            color: #92400e;
+            line-height: 1.5;
+        }
+
+        .copy-hint i {
+            color: var(--gold);
+            margin-right: 0.25rem;
+        }
+
+        /* ── Improvement follow-up (≤4 stars) ── */
+        .improve-section {
+            text-align: left;
+        }
+
+        .improve-section h3 {
+            color: var(--navy);
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.35rem;
+        }
+
+        .improve-section p {
+            color: #64748b;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .improve-section textarea {
+            width: 100%;
+            padding: 0.65rem 0.85rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+            min-height: 80px;
+            resize: vertical;
+            margin-bottom: 0.75rem;
+        }
+
+        .improve-section textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.15);
+        }
+
+        .improve-submit {
+            width: 100%;
+            padding: 0.7rem;
+            background: var(--navy);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .improve-submit:hover {
+            background: #243352;
+        }
+
+        .improve-thanks {
+            display: none;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 0.5rem;
+            color: #166534;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <img src="Transparent BTC Logo.png" alt="Bears Track Club">
+            <h1>Share Your Experience</h1>
+            <p>We'd love to hear from your family!</p>
+        </div>
+
+        <!-- ═══ FORM ═══ -->
+        <div class="form-section" id="formSection">
+            <h2>Your Testimonial</h2>
+            <p class="subtitle">Tell us about your experience with Bears Track Club. Your feedback helps us improve and
+                helps other families learn about our programs.</p>
+
+            <form id="testimonialForm" onsubmit="handleSubmit(event)">
+                <div class="field">
+                    <label>Your Name <span class="required">*</span></label>
+                    <input type="text" id="parentName" placeholder="e.g. Sarah Johnson" required>
+                </div>
+
+                <div class="field">
+                    <label>Athlete Name(s)</label>
+                    <input type="text" id="athleteName" placeholder="e.g. Emily & Jake Johnson">
+                </div>
+
+                <div class="field">
+                    <label>Program <span class="required">*</span></label>
+                    <select id="program" required>
+                        <option value="">Select a program...</option>
+                        <option value="Summer Bears (MS/HS XC)">Summer Bears (MS/HS XC)</option>
+                        <option value="Summer Cubs (Ages 7-11)">Summer Cubs (Ages 7–11)</option>
+                        <option value="Adult Coaching">Adult Coaching</option>
+                        <option value="Multiple Programs">Multiple Programs</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>Overall Rating <span class="required">*</span></label>
+                    <div class="stars" id="starRating">
+                        <span class="star" data-value="1">★</span>
+                        <span class="star" data-value="2">★</span>
+                        <span class="star" data-value="3">★</span>
+                        <span class="star" data-value="4">★</span>
+                        <span class="star" data-value="5">★</span>
+                    </div>
+                    <input type="hidden" id="rating" value="" required>
+                </div>
+
+                <div class="field">
+                    <label>Your Testimonial <span class="required">*</span></label>
+                    <textarea id="testimonial"
+                        placeholder="What has your family's experience been like with Bears TC? How has it helped your athlete?"
+                        required></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-paper-plane" style="margin-right: 0.5rem;"></i>Submit Testimonial
+                </button>
+
+                <p class="privacy-note"><i class="fas fa-lock" style="margin-right: 0.25rem;"></i>By submitting, you
+                    give us permission to share your testimonial.</p>
+            </form>
+        </div>
+
+        <!-- ═══ THANK YOU: 5 STARS → GOOGLE REVIEW ═══ -->
+        <div class="thank-you" id="thankYou5Star">
+            <div class="check-circle">
+                <i class="fas fa-check"></i>
+            </div>
+            <h2>Thank You! 🎉</h2>
+            <p class="message">Your testimonial means the world to us. It helps other families discover Bears Track Club
+                and motivates our coaches every day.</p>
+
+            <hr class="divider">
+
+            <div class="google-section">
+                <h3>One More Thing?</h3>
+                <p>If you have a moment, we'd be so grateful if you'd also leave a Google review. It takes 30 seconds
+                    and makes a <strong>huge</strong> difference for our visibility!</p>
+                <a href="https://g.page/r/CSh3ZJe4s3paEBM/review" target="_blank" class="google-btn">
+                    <i class="fab fa-google"></i>Leave a Google Review
+                </a>
+                <div class="copy-hint">
+                    <i class="fas fa-lightbulb"></i> <strong>Tip:</strong> You can copy & paste your testimonial above
+                    into the Google review — easy!
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ THANK YOU: ≤4 STARS → IMPROVEMENT FEEDBACK ═══ -->
+        <div class="thank-you" id="thankYouImprove">
+            <div class="check-circle">
+                <i class="fas fa-check"></i>
+            </div>
+            <h2>Thank You! 🙏</h2>
+            <p class="message">We truly appreciate your honest feedback. It helps us get better for every athlete and
+                family.</p>
+
+            <hr class="divider">
+
+            <div class="improve-section">
+                <h3>What Can We Do Better?</h3>
+                <p>We'd love to hear more about how we can improve your experience. Your feedback goes directly to Coach
+                    Luke.</p>
+                <textarea id="improvementFeedback"
+                    placeholder="Any specific suggestions? We read every response..."></textarea>
+                <button class="improve-submit" onclick="submitImprovement()">Send Feedback</button>
+                <div class="improve-thanks" id="improveThanks">
+                    <i class="fas fa-heart" style="color: #ef4444; margin-right: 0.25rem;"></i>
+                    Thank you — your feedback helps us improve for every family!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Star rating
+        const stars = document.querySelectorAll('.star');
+        let selectedRating = 0;
+
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                selectedRating = parseInt(star.dataset.value);
+                document.getElementById('rating').value = selectedRating;
+                stars.forEach(s => {
+                    s.classList.toggle('active', parseInt(s.dataset.value) <= selectedRating);
+                });
+            });
+
+            star.addEventListener('mouseenter', () => {
+                const val = parseInt(star.dataset.value);
+                stars.forEach(s => {
+                    s.style.color = parseInt(s.dataset.value) <= val ? 'var(--gold)' : '#e2e8f0';
+                });
+            });
+
+            star.addEventListener('mouseleave', () => {
+                stars.forEach(s => {
+                    s.style.color = parseInt(s.dataset.value) <= selectedRating ? 'var(--gold)' : '#e2e8f0';
+                });
+            });
+        });
+
+        // ══════════════════════════════════════════════════
+        // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW
+        // ══════════════════════════════════════════════════
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyUjqh38B21Er6wGu0wfdN35btNWDu04_iRT3jKoJjK_9eb5gKmCIMgaeW1gbu7Bxfa/exec';
+
+        async function handleSubmit(e) {
+            e.preventDefault();
+
+            if (selectedRating === 0) {
+                alert('Please select a star rating.');
+                return;
+            }
+
+            const btn = document.querySelector('.submit-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:0.5rem;"></i>Submitting...';
+            btn.disabled = true;
+
+            const data = {
+                name: document.getElementById('parentName').value,
+                athlete: document.getElementById('athleteName').value,
+                program: document.getElementById('program').value,
+                rating: selectedRating,
+                testimonial: document.getElementById('testimonial').value,
+                timestamp: new Date().toISOString()
+            };
+
+            // Always save locally as backup
+            const saved = JSON.parse(localStorage.getItem('bearstc_testimonials') || '[]');
+            saved.push(data);
+            localStorage.setItem('bearstc_testimonials', JSON.stringify(saved));
+
+            // Submit to Google Sheets backend
+            try {
+                if (APPS_SCRIPT_URL !== 'PASTE_YOUR_APPS_SCRIPT_URL_HERE') {
+                    await fetch(APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                }
+                console.log('📝 Testimonial submitted:', data);
+            } catch (err) {
+                console.warn('Backend submit failed (saved locally):', err);
+            }
+
+            // Show the right thank-you based on rating
+            document.getElementById('formSection').style.display = 'none';
+            if (selectedRating === 5) {
+                document.getElementById('thankYou5Star').classList.add('show');
+            } else {
+                document.getElementById('thankYouImprove').classList.add('show');
+            }
+        }
+
+        function submitImprovement() {
+            const feedback = document.getElementById('improvementFeedback').value;
+            if (!feedback.trim()) return;
+
+            // Append improvement to the last saved testimonial
+            const saved = JSON.parse(localStorage.getItem('bearstc_testimonials') || '[]');
+            if (saved.length > 0) {
+                saved[saved.length - 1].improvement = feedback;
+                localStorage.setItem('bearstc_testimonials', JSON.stringify(saved));
+            }
+
+            // Send to backend
+            if (APPS_SCRIPT_URL !== 'PASTE_YOUR_APPS_SCRIPT_URL_HERE') {
+                fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: saved[saved.length - 1]?.name || 'Unknown',
+                        type: 'improvement_feedback',
+                        feedback: feedback,
+                        timestamp: new Date().toISOString()
+                    })
+                }).catch(() => { });
+            }
+
+            // Show thanks
+            document.getElementById('improvementFeedback').style.display = 'none';
+            document.querySelector('.improve-submit').style.display = 'none';
+            document.getElementById('improveThanks').style.display = 'block';
+        }
+    </script>
+
+</body>
+
+</html>

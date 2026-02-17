@@ -13,7 +13,7 @@
 // 7. Who has access = "Anyone"
 // 8. Click "Deploy" → Authorize → Allow
 // 9. Copy the Web App URL
-// 10. Paste it into testimonial.html where it says PASTE_YOUR_APPS_SCRIPT_URL_HERE
+// 10. Create config.js (copy from config.example.js) and paste the URL there
 //
 // That's it! Testimonials will go to a Google Sheet automatically.
 // =============================================================

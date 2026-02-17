@@ -4398,6 +4398,11 @@
                 init();
             }
 
+            // Expose for testing
+            if (typeof window !== 'undefined') {
+                window.PaceCalculator = { Calculations, CONFIG, AppLogic };
+            }
+
         })();
 
     // PWA Service Worker Registration & Install Prompt

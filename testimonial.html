@@ -585,7 +585,9 @@
                         feedback: feedback,
                         timestamp: new Date().toISOString()
                     })
-                }).catch(() => { });
+                }).catch((error) => {
+                    console.error('Error submitting improvement feedback:', error);
+                });
             }
 
             // Show thanks

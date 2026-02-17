@@ -1,8 +1,8 @@
 // Bears TC Pace Calculator - Service Worker
 const CACHE_NAME = 'bears-pace-calc-v1';
 const ASSETS = [
-  '/BearsTCVDOTCalculator/test_calculator.html',
-  '/BearsTCVDOTCalculator/manifest.json'
+  './test_calculator.html',
+  './manifest.json'
 ];
 
 self.addEventListener('install', event => {
@@ -25,6 +25,6 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
       .then(cached => cached || fetch(event.request))
-      .catch(() => caches.match('/BearsTCVDOTCalculator/test_calculator.html'))
+      .catch(() => caches.match('./test_calculator.html'))
   );
 });

@@ -773,6 +773,7 @@
                 undoStack: [], // Multiple Undo Actions
             };
 
+            const vdotTimeCache = new Map();
             const METERS_PER_MILE = 1609.34;
             const METERS_PER_KM = 1000;
             const CONFIG = {
@@ -1167,6 +1168,9 @@
                     return vo2 / percentVO2Max;
                 },
                 calculateTimeFromVDOT(vdot, distanceMeters) {
+                    const cacheKey = `${vdot}-${distanceMeters}`;
+                    if (vdotTimeCache.has(cacheKey)) return vdotTimeCache.get(cacheKey);
+
                     let min_v = 100, max_v = 500, velocity;
                     for (let i = 0; i < 30; i++) {
                         velocity = (min_v + max_v) / 2;
@@ -1176,7 +1180,12 @@
                         if (vo2 / percentVO2Max < vdot) min_v = velocity; else max_v = velocity;
                     }
                     velocity = (min_v + max_v) / 2;
-                    return (distanceMeters / velocity) * 60;
+                    const result = (distanceMeters / velocity) * 60;
+
+                    // Basic cache eviction to prevent memory leaks
+                    if (vdotTimeCache.size > 500) vdotTimeCache.clear();
+                    vdotTimeCache.set(cacheKey, result);
+                    return result;
                 },
                 /**
                  * USTFCCA Conversion: Given a "from" event name and time in seconds,

@@ -479,6 +479,13 @@
     </div>
 
     <script>
+        // Configuration
+        const CONFIG = {
+            // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW
+            APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyUjqh38B21Er6wGu0wfdN35btNWDu04_iRT3jKoJjK_9eb5gKmCIMgaeW1gbu7Bxfa/exec',
+            STORAGE_KEY: 'bearstc_testimonials'
+        };
+
         // Star rating
         const stars = document.querySelectorAll('.star');
         let selectedRating = 0;
@@ -506,11 +513,6 @@
             });
         });
 
-        // ══════════════════════════════════════════════════
-        // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW
-        // ══════════════════════════════════════════════════
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyUjqh38B21Er6wGu0wfdN35btNWDu04_iRT3jKoJjK_9eb5gKmCIMgaeW1gbu7Bxfa/exec';
-
         async function handleSubmit(e) {
             e.preventDefault();
 
@@ -534,14 +536,14 @@
             };
 
             // Always save locally as backup
-            const saved = JSON.parse(localStorage.getItem('bearstc_testimonials') || '[]');
+            const saved = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY) || '[]');
             saved.push(data);
-            localStorage.setItem('bearstc_testimonials', JSON.stringify(saved));
+            localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(saved));
 
             // Submit to Google Sheets backend
             try {
-                if (APPS_SCRIPT_URL !== 'PASTE_YOUR_APPS_SCRIPT_URL_HERE') {
-                    await fetch(APPS_SCRIPT_URL, {
+                if (CONFIG.APPS_SCRIPT_URL !== 'PASTE_YOUR_APPS_SCRIPT_URL_HERE') {
+                    await fetch(CONFIG.APPS_SCRIPT_URL, {
                         method: 'POST',
                         mode: 'no-cors',
                         headers: { 'Content-Type': 'application/json' },
@@ -567,15 +569,15 @@
             if (!feedback.trim()) return;
 
             // Append improvement to the last saved testimonial
-            const saved = JSON.parse(localStorage.getItem('bearstc_testimonials') || '[]');
+            const saved = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY) || '[]');
             if (saved.length > 0) {
                 saved[saved.length - 1].improvement = feedback;
-                localStorage.setItem('bearstc_testimonials', JSON.stringify(saved));
+                localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(saved));
             }
 
             // Send to backend
-            if (APPS_SCRIPT_URL !== 'PASTE_YOUR_APPS_SCRIPT_URL_HERE') {
-                fetch(APPS_SCRIPT_URL, {
+            if (CONFIG.APPS_SCRIPT_URL !== 'PASTE_YOUR_APPS_SCRIPT_URL_HERE') {
+                fetch(CONFIG.APPS_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },

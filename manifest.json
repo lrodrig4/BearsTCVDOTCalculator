@@ -2,7 +2,7 @@
   "name": "Bears TC Pace Calculator",
   "short_name": "Pace Calc",
   "description": "VDOT-based training pace calculator for Bears Track Club athletes",
-  "start_url": "/BearsTCVDOTCalculator/test_calculator.html",
+  "start_url": "./test_calculator.html",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#6366f1",

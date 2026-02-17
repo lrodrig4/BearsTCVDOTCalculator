@@ -478,6 +478,7 @@
         </div>
     </div>
 
+    <script src="config.js"></script>
     <script>
         // Star rating
         const stars = document.querySelectorAll('.star');
@@ -507,9 +508,11 @@
         });
 
         // ══════════════════════════════════════════════════
-        // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW
+        // CONFIGURATION
         // ══════════════════════════════════════════════════
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyUjqh38B21Er6wGu0wfdN35btNWDu04_iRT3jKoJjK_9eb5gKmCIMgaeW1gbu7Bxfa/exec';
+        const APPS_SCRIPT_URL = (typeof CONFIG !== 'undefined' && CONFIG.APPS_SCRIPT_URL)
+            ? CONFIG.APPS_SCRIPT_URL
+            : 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
 
         async function handleSubmit(e) {
             e.preventDefault();

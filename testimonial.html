@@ -511,6 +511,9 @@
         // ══════════════════════════════════════════════════
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyUjqh38B21Er6wGu0wfdN35btNWDu04_iRT3jKoJjK_9eb5gKmCIMgaeW1gbu7Bxfa/exec';
 
+        // Store submission in memory to avoid PII in localStorage
+        let currentSubmission = null;
+
         async function handleSubmit(e) {
             e.preventDefault();
 
@@ -533,10 +536,8 @@
                 timestamp: new Date().toISOString()
             };
 
-            // Always save locally as backup
-            const saved = JSON.parse(localStorage.getItem('bearstc_testimonials') || '[]');
-            saved.push(data);
-            localStorage.setItem('bearstc_testimonials', JSON.stringify(saved));
+            // Save in memory for improvement flow
+            currentSubmission = data;
 
             // Submit to Google Sheets backend
             try {
@@ -550,7 +551,7 @@
                 }
                 console.log('📝 Testimonial submitted:', data);
             } catch (err) {
-                console.warn('Backend submit failed (saved locally):', err);
+                console.warn('Backend submit failed:', err);
             }
 
             // Show the right thank-you based on rating
@@ -566,11 +567,9 @@
             const feedback = document.getElementById('improvementFeedback').value;
             if (!feedback.trim()) return;
 
-            // Append improvement to the last saved testimonial
-            const saved = JSON.parse(localStorage.getItem('bearstc_testimonials') || '[]');
-            if (saved.length > 0) {
-                saved[saved.length - 1].improvement = feedback;
-                localStorage.setItem('bearstc_testimonials', JSON.stringify(saved));
+            // Append improvement to the current submission in memory
+            if (currentSubmission) {
+                currentSubmission.improvement = feedback;
             }
 
             // Send to backend
@@ -580,7 +579,7 @@
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        name: saved[saved.length - 1]?.name || 'Unknown',
+                        name: currentSubmission?.name || 'Unknown',
                         type: 'improvement_feedback',
                         feedback: feedback,
                         timestamp: new Date().toISOString()

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pace Calculator Unit Tests</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/10.2.0/mocha.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/10.2.0/mocha.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/4.3.7/chai.min.js"></script>
+</head>
+<body>
+    <div id="mocha"></div>
+    <!-- Hidden iframe to load the application -->
+    <iframe id="appFrame" style="display: none;"></iframe>
+
+    <script>
+        mocha.setup('bdd');
+        const expect = chai.expect;
+        const iframe = document.getElementById('appFrame');
+        let testsRan = false;
+
+        function runTests(win) {
+            if (testsRan) return;
+            if (!win.PaceCalculator) {
+                console.error("PaceCalculator not found on window object. Ensure Calculator Code exposes it.");
+                document.body.innerHTML += "<h2 style='color:red'>Error: PaceCalculator object not found. Tests cannot run.</h2>";
+                return;
+            }
+            testsRan = true;
+
+            const { Calculations, CONFIG } = win.PaceCalculator;
+
+            describe('USTFCCA Conversions', function() {
+
+                describe('Data Integrity', function() {
+                    it('should have ustfccaConversions configuration', function() {
+                        expect(CONFIG.ustfccaConversions).to.be.an('array');
+                        expect(CONFIG.ustfccaConversions.length).to.be.greaterThan(0);
+                    });
+                });
+
+                describe('applyUSTFCCA', function() {
+
+                    it('should correctly convert Mile to 1500 Meters', function() {
+                        // Factor: 0.9259, Time: 240s -> 222.216 -> 222.22
+                        const result = Calculations.applyUSTFCCA('Mile', 240);
+                        expect(result).to.be.an('array');
+                        const conversion = result.find(c => c.event === '1500 Meters');
+                        expect(conversion).to.exist;
+                        expect(conversion.factor).to.equal(0.9259);
+                        expect(conversion.equivalentTimeSec).to.equal(222.22);
+                    });
+
+                    it('should correctly handle rounding (60 Yards to 60 Meters)', function() {
+                        // Factor: 1.07, Time: 10s -> 10.70
+                        const result = Calculations.applyUSTFCCA('60 Yards', 10);
+                        const conversion = result.find(c => c.event === '60 Meters');
+                        expect(conversion.equivalentTimeSec).to.equal(10.70);
+                    });
+
+                    it('should return multiple results for events with multiple conversions (200 Meters)', function() {
+                        const result = Calculations.applyUSTFCCA('200 Meters', 20);
+                        expect(result).to.have.lengthOf.at.least(2);
+
+                        const to300Y = result.find(c => c.event === '300 Yards');
+                        const to300M = result.find(c => c.event === '300 Meters');
+
+                        expect(to300Y).to.exist;
+                        expect(to300Y.factor).to.equal(1.44);
+                        expect(to300Y.equivalentTimeSec).to.equal(Math.ceil(20 * 1.44 * 100) / 100);
+
+                        expect(to300M).to.exist;
+                        expect(to300M.factor).to.equal(1.60);
+                        expect(to300M.equivalentTimeSec).to.equal(32.00);
+                    });
+
+                    it('should return empty array for unknown event', function() {
+                        const result = Calculations.applyUSTFCCA('NonExistentEvent', 100);
+                        expect(result).to.be.an('array').that.is.empty;
+                    });
+                });
+            });
+
+            mocha.run();
+        }
+
+        // Try to fetch and inject content (handles MIME type issues on servers)
+        // If fetch fails (e.g. file:// protocol), fall back to src attribute
+        const appUrl = "Calculator%20Code"; // Name of the file in repo
+
+        fetch(appUrl)
+            .then(response => {
+                if (!response.ok) throw new Error("Network response was not ok");
+                return response.text();
+            })
+            .then(html => {
+                const doc = iframe.contentDocument || iframe.contentWindow.document;
+                doc.open();
+                doc.write(html);
+                doc.close();
+
+                // Polling for the global object
+                let attempts = 0;
+                const check = setInterval(() => {
+                    if (iframe.contentWindow.PaceCalculator) {
+                        clearInterval(check);
+                        runTests(iframe.contentWindow);
+                    } else if (attempts > 20) { // 2 seconds timeout
+                        clearInterval(check);
+                        console.warn("Timed out waiting for PaceCalculator via injection.");
+                        // It might still load if script was async, but let's try fallback or error
+                    }
+                    attempts++;
+                }, 100);
+            })
+            .catch(err => {
+                console.log("Fetch method failed or not supported, trying iframe src...", err);
+                iframe.src = appUrl;
+                iframe.onload = () => {
+                    // Give it a tiny bit of time for scripts to run if needed
+                    setTimeout(() => runTests(iframe.contentWindow), 100);
+                };
+            });
+    </script>
+</body>
+</html>

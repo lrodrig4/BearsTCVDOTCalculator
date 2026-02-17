@@ -4398,6 +4398,12 @@
                 init();
             }
 
+            // Expose for testing
+            window.PaceCalculator = {
+                Calculations,
+                CONFIG
+            };
+
         })();
 
     // PWA Service Worker Registration & Install Prompt

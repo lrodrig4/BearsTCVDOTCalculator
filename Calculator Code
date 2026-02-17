@@ -3418,12 +3418,26 @@
                             effectiveAltitude
                         };
 
-                        // Save to history for VDOT Progress Chart
-                        const history = JSON.parse(localStorage.getItem('paceCalcHistory') || '[]');
-                        history.push({ vdot: state.latestCalculation.vdot, timestamp: Date.now() });
-                        // Keep last 50 entries
-                        if (history.length > 50) history.splice(0, history.length - 50);
-                        localStorage.setItem('paceCalcHistory', JSON.stringify(history));
+                        // Save to history for VDOT Progress Chart (deferred)
+                        // Capture data synchronously to ensure correctness if state updates before callback runs
+                        const historyEntry = { vdot: state.latestCalculation.vdot, timestamp: Date.now() };
+                        const saveHistory = () => {
+                            try {
+                                const history = JSON.parse(localStorage.getItem('paceCalcHistory') || '[]');
+                                history.push(historyEntry);
+                                // Keep last 50 entries
+                                if (history.length > 50) history.splice(0, history.length - 50);
+                                localStorage.setItem('paceCalcHistory', JSON.stringify(history));
+                            } catch (e) {
+                                console.error('Failed to save history', e);
+                            }
+                        };
+
+                        if ('requestIdleCallback' in window) {
+                            requestIdleCallback(saveHistory);
+                        } else {
+                            setTimeout(saveHistory, 0);
+                        }
 
                         UI.renderResults();
                         UI.renderActionButtons('action-buttons');

@@ -20,11 +20,11 @@
 
 function doPost(e) {
     try {
-        var data = JSON.parse(e.postData.contents);
+        const data = JSON.parse(e.postData.contents);
 
         // Get or create the spreadsheet
-        var ss = getOrCreateSheet();
-        var sheet = ss.getSheetByName('Testimonials');
+        const ss = getOrCreateSheet();
+        const sheet = ss.getSheetByName('Testimonials');
 
         // Add the testimonial row
         sheet.appendRow([
@@ -38,8 +38,8 @@ function doPost(e) {
         ]);
 
         // Send email notification to Coach Luke
-        var subject = '⭐ New Bears TC Testimonial from ' + (data.name || 'Anonymous');
-        var body = '🐻 NEW TESTIMONIAL\n\n' +
+        const subject = '⭐ New Bears TC Testimonial from ' + (data.name || 'Anonymous');
+        const body = '🐻 NEW TESTIMONIAL\n\n' +
             'Name: ' + (data.name || 'N/A') + '\n' +
             'Athlete: ' + (data.athlete || 'N/A') + '\n' +
             'Program: ' + (data.program || 'N/A') + '\n' +
@@ -69,23 +69,23 @@ function doGet(e) {
 }
 
 function getOrCreateSheet() {
-    var files = DriveApp.getFilesByName('Bears TC Testimonials');
+    const files = DriveApp.getFilesByName('Bears TC Testimonials');
 
     if (files.hasNext()) {
         return SpreadsheetApp.open(files.next());
     }
 
     // Create new spreadsheet
-    var ss = SpreadsheetApp.create('Bears TC Testimonials');
-    var sheet = ss.getActiveSheet();
+    const ss = SpreadsheetApp.create('Bears TC Testimonials');
+    const sheet = ss.getActiveSheet();
     sheet.setName('Testimonials');
 
     // Set up headers
-    var headers = ['Timestamp', 'Parent Name', 'Athlete Name', 'Program', 'Rating', 'Testimonial', 'Stars'];
+    const headers = ['Timestamp', 'Parent Name', 'Athlete Name', 'Program', 'Rating', 'Testimonial', 'Stars'];
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
 
     // Format header row
-    var headerRange = sheet.getRange(1, 1, 1, headers.length);
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
     headerRange.setBackground('#1a2744');
     headerRange.setFontColor('white');
     headerRange.setFontWeight('bold');
@@ -107,7 +107,7 @@ function getOrCreateSheet() {
 
 // Run this once to test the setup
 function testSetup() {
-    var ss = getOrCreateSheet();
+    const ss = getOrCreateSheet();
     Logger.log('Sheet URL: ' + ss.getUrl());
     Logger.log('Setup complete! Your testimonials will appear here.');
 }

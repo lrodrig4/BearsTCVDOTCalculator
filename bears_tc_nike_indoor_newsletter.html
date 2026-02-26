@@ -1595,58 +1595,21 @@
             <td style="padding:20px 40px 8px 40px;">
               <p
                 style="margin:0 0 16px 0;font-size:15px;line-height:1.8;color:#333;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
-                Nike needs a bio for each athlete competing. Please fill out the form below &mdash; it will submit
-                directly to our team. <strong>All fields marked with * are required.</strong></p>
+                Nike needs a bio for each athlete competing. Click the button below to fill out the form &mdash; it
+                takes about 5 minutes and submits directly to our team.</p>
             </td>
           </tr>
           <tr>
-            <td style="padding:0 40px 36px 40px;">
-              <div class="bio-form" id="bioForm">
-                <div id="formFields">
-                  <label class="required">Athlete Name</label>
-                  <select id="athleteName">
-                    <option value="">Select your name&hellip;</option>
-                    <option>Benjamin Olds</option>
-                    <option>Axel Mason</option>
-                    <option>Lukas Sturgeon</option>
-                    <option>Jake Bossinger</option>
-                    <option>Jackson Marshall</option>
-                    <option>Preston Hall</option>
-                    <option>Esther Paulson</option>
-                  </select>
-                  <label class="required">City</label><input type="text" id="city" placeholder="e.g. Monument">
-                  <label class="required">State</label><input type="text" id="state" placeholder="e.g. Colorado">
-                  <label class="required">Country</label><input type="text" id="country" value="United States">
-                  <label class="required">Email</label><input type="email" id="email" placeholder="your@email.com">
-                  <label class="required">Graduation Year</label><input type="text" id="graduationYear"
-                    placeholder="e.g. 2027">
-                  <label class="required">Team Alias</label><input type="text" id="teamAlias" value="Bears Track Club">
-                  <label class="required">Coach</label><input type="text" id="coach" value="Coach Luke Rodriguez">
-                  <label class="required">School</label><input type="text" id="school"
-                    placeholder="e.g. Palmer Ridge High School">
-                  <label class="required">Birthdate</label><input type="date" id="birthdate">
-                  <label class="required">Emergency Contact Name</label><input type="text" id="emergencyContactName"
-                    placeholder="e.g. Parent/Guardian name">
-                  <label class="required">Emergency Contact Phone</label><input type="tel" id="emergencyContactPhone"
-                    placeholder="e.g. (719) 555-1234">
-                  <label>Pronunciation of Your Name</label><input type="text" id="namePronunciation"
-                    placeholder="e.g. BEN-juh-min OHLDZ">
-                  <label>College Choices</label><textarea id="collegeChoices"
-                    placeholder="List any colleges you are considering"></textarea>
-                  <label>Track &amp; Field Honors</label><textarea id="tfHonors"
-                    placeholder="e.g. State Champion 800m, All-Conference"></textarea>
-                  <label>Other Sports Honors</label><textarea id="otherSportsHonors"
-                    placeholder="Honors from other sports"></textarea>
-                  <label>Academic &amp; Other Honors</label><textarea id="academicHonors"
-                    placeholder="e.g. Honor Roll, National Merit"></textarea>
-                  <label>Noteworthy Relatives in Sports</label><textarea id="noteworthyRelatives"
-                    placeholder="Relatives and their accomplishments"></textarea>
-                  <label>Anything Else We Should Know</label><textarea id="anythingElse"
-                    placeholder="Anything else you'd like to share"></textarea>
-                  <button type="button" onclick="submitBio()">Submit Athlete Bio &rarr;</button>
-                  <div id="formMessage"></div>
-                </div>
-              </div>
+            <td align="center" style="padding:0 40px 36px 40px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center" style="background:#e8792b;border-radius:6px;padding:14px 36px;">
+                    <a href="https://lrodrig4.github.io/BearsTCVDOTCalculator/nin-athlete-bio.html"
+                      style="color:#fff;text-decoration:none;font-size:15px;font-family:'Segoe UI',Arial,Helvetica,sans-serif;font-weight:700;">Fill
+                      Out Your Athlete Bio &rarr;</a>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
 
@@ -1709,60 +1672,7 @@
     </tr>
   </table>
 
-  <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx3qSjFUlITFmxan9NclBkpEO5ojgGEm8lnA6PQSmMBP5OzP2gMfsW_wKqkH2OIvykG/exec";
-    async function submitBio() {
-      const btn = document.querySelector('.bio-form button');
-      const msg = document.getElementById('formMessage');
-      const required = {
-        athleteName: document.getElementById('athleteName').value,
-        city: document.getElementById('city').value,
-        state: document.getElementById('state').value,
-        country: document.getElementById('country').value,
-        email: document.getElementById('email').value,
-        graduationYear: document.getElementById('graduationYear').value,
-        teamAlias: document.getElementById('teamAlias').value,
-        coach: document.getElementById('coach').value,
-        school: document.getElementById('school').value,
-        birthdate: document.getElementById('birthdate').value,
-        emergencyContactName: document.getElementById('emergencyContactName').value,
-        emergencyContactPhone: document.getElementById('emergencyContactPhone').value,
-      };
-      for (const [k, v] of Object.entries(required)) {
-        if (!v || v.trim() === '') {
-          msg.className = 'error';
-          msg.textContent = 'Please fill in all required fields (marked with *).';
-          return;
-        }
-      }
-      const data = {
-        ...required,
-        namePronunciation: document.getElementById('namePronunciation').value,
-        collegeChoices: document.getElementById('collegeChoices').value,
-        tfHonors: document.getElementById('tfHonors').value,
-        otherSportsHonors: document.getElementById('otherSportsHonors').value,
-        academicHonors: document.getElementById('academicHonors').value,
-        noteworthyRelatives: document.getElementById('noteworthyRelatives').value,
-        anythingElse: document.getElementById('anythingElse').value,
-      };
-      btn.textContent = 'Submitting...';
-      btn.disabled = true;
-      msg.textContent = '';
-      msg.className = '';
-      try {
-        const resp = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) });
-        const result = await resp.json();
-        if (result.status === 'success') {
-          document.getElementById('formFields').innerHTML = '<div class="success">&check; Thank you! Your athlete bio has been submitted successfully.</div>';
-        } else { throw new Error(result.message || 'Unknown error'); }
-      } catch (err) {
-        msg.className = 'error';
-        msg.textContent = 'Submission failed: ' + err.message + '. Please try again or contact Coach Luke.';
-        btn.textContent = 'Submit Athlete Bio \u2192';
-        btn.disabled = false;
-      }
-    }
-  </script>
+
 </body>
 
 </html>

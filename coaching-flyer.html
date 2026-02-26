@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bears Track Club — Monument, CO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'bears-navy': '#1F2D46',
+                        'bears-gold': '#c9a227',
+                        'bears-gold-light': '#f4d03f',
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #e2e8f0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        .brand-font {
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .program-card {
+            transition: transform 0.2s;
+        }
+
+        .program-card:hover {
+            transform: translateY(-2px);
+        }
+
+
+
+        @media screen {
+            body {
+                min-height: 100vh;
+                padding-top: 1.5rem;
+                padding-bottom: 1.5rem;
+            }
+        }
+
+        @media print {
+            @page {
+                size: letter portrait;
+                margin: 0;
+            }
+
+            html,
+            body {
+                background: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                min-height: 0 !important;
+                height: auto !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .flyer-container {
+                box-shadow: none !important;
+                max-width: none !important;
+                width: 100% !important;
+                margin: 0 !important;
+            }
+
+            /* ── Real size reductions (no zoom) ── */
+            #print-topbar {
+                padding-top: 0.35rem !important;
+                padding-bottom: 0.2rem !important;
+            }
+
+            #print-logo {
+                height: 5rem !important;
+                margin-bottom: 0 !important;
+            }
+
+            #print-hero {
+                height: 128px !important;
+            }
+
+            .print-card-img {
+                height: 108px !important;
+            }
+
+            #print-programs {
+                padding-top: 0.4rem !important;
+                padding-left: 0.75rem !important;
+                padding-right: 0.75rem !important;
+            }
+
+            #print-programs .grid {
+                gap: 0.5rem !important;
+            }
+
+            #print-programs .program-card .p-3 {
+                padding: 0.35rem !important;
+            }
+
+            #print-programs .mt-2.pt-2 {
+                margin-top: 0.25rem !important;
+                padding-top: 0.25rem !important;
+            }
+
+            #print-programs .mb-4 {
+                margin-bottom: 0.5rem !important;
+            }
+
+            #print-family {
+                padding: 0.5rem !important;
+                margin-bottom: 0.4rem !important;
+            }
+
+            #print-family .grid {
+                gap: 0.25rem !important;
+            }
+
+            #print-family .p-2 {
+                padding: 0.25rem !important;
+            }
+
+            #print-family .mb-2 {
+                margin-bottom: 0.25rem !important;
+            }
+
+            #print-creds {
+                padding: 0.25rem 0.5rem !important;
+                margin-bottom: 0.35rem !important;
+            }
+
+            #print-coaches {
+                gap: 0.3rem !important;
+                margin-bottom: 0.35rem !important;
+            }
+
+            #print-coaches .p-3 {
+                padding: 0.3rem !important;
+            }
+
+            #print-coaches .mb-1 {
+                margin-bottom: 0.1rem !important;
+            }
+
+            #print-qr {
+                gap: 0.4rem !important;
+                margin-bottom: 0.3rem !important;
+            }
+
+            #print-qr .p-4 {
+                padding: 0.4rem !important;
+            }
+
+            #print-qr img[alt*="QR"] {
+                width: 4rem !important;
+                height: 4rem !important;
+            }
+
+            #print-footer {
+                padding-top: 0.2rem !important;
+                padding-bottom: 0.15rem !important;
+            }
+
+            #print-footer .mt-1\.5 {
+                margin-top: 0.25rem !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="flex flex-col items-center">
+
+    <div class="flyer-container w-full max-w-[850px] bg-white shadow-2xl overflow-hidden relative">
+
+        <!-- ═══════════ TOP BAR ═══════════ -->
+        <div id="print-topbar" class="bg-bears-navy text-white px-6 py-5 flex flex-col items-center">
+            <img id="print-logo" src="Transparent BTC Logo.png" alt="Bears Track Club"
+                class="h-32 w-auto object-contain mb-1">
+            <div class="flex items-center gap-3 text-[10px] text-gray-400 uppercase tracking-widest">
+                <span>Monument, CO</span>
+                <span class="text-bears-gold">•</span>
+                <span>USATF Member Club</span>
+            </div>
+        </div>
+
+        <!-- ═══════════ HERO ═══════════ -->
+        <div id="print-hero"
+            class="relative h-[150px] flex items-center justify-center text-center text-white overflow-hidden">
+            <img src="team-group-photo.jpg" alt="Bears TC Team"
+                class="absolute inset-0 w-full h-full object-cover object-[center_30%]">
+            <div class="absolute inset-0 bg-gradient-to-t from-bears-navy/95 via-bears-navy/70 to-slate-900/40"></div>
+            <div class="relative z-10 px-6">
+                <h1 class="text-3xl md:text-4xl font-bold drop-shadow-lg leading-tight tracking-tight">
+                    RUN FASTER. TRAIN SMARTER. STAY HEALTHY.
+                </h1>
+                <p class="text-[10px] font-medium text-bears-gold-light mt-0.5 uppercase tracking-widest">Every Athlete.
+                    Every
+                    Goal.</p>
+                <p class="text-[11px] font-light text-gray-200 mt-0.5 max-w-lg mx-auto">
+                    Local, science-based coaching for adults, middle & high school runners, and ages 7–11 in Monument &
+                    N. Colorado Springs.
+                </p>
+                <div
+                    class="inline-block bg-bears-gold text-bears-navy font-bold text-[10px] px-3 py-1 mt-2 rounded-sm shadow-lg tracking-wider">
+                    🏃 SUMMER 2026 REGISTRATION OPEN — Scan to visit bearstc.org
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════ THREE PROGRAMS ═══════════ -->
+        <div id="print-programs" class="px-5 md:px-7 pt-5">
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+
+                <!-- ── 1. ADULT COACHING ── -->
+                <div class="program-card rounded-xl overflow-hidden border border-slate-200 shadow-sm flex flex-col">
+                    <div class="print-card-img relative h-[145px] overflow-hidden">
+                        <img src="adult-coaching-action.png?v=4" alt="Bears TC Coach Racing"
+                            class="w-full h-full object-cover object-[center_15%]">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"
+                            style="background-size: 100% 45%; background-position: bottom; background-repeat: no-repeat;">
+                        </div>
+                        <div class="absolute top-2 left-2 z-10">
+                            <span
+                                class="bg-sky-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide shadow">RDN
+                                On Staff</span>
+                        </div>
+                        <div class="absolute bottom-0 left-0 p-2">
+                            <h3 class="text-white text-lg font-bold leading-tight drop-shadow">ADULT COACHING</h3>
+                            <p class="text-sky-200 text-[10px] font-medium">Adults · 1:1 Performance Plans</p>
+                        </div>
+                    </div>
+                    <div class="p-3 flex-1 flex flex-col bg-white">
+                        <ul class="text-[10px] space-y-1 text-gray-600 flex-1">
+                            <li><i class="fas fa-apple-alt text-sky-500 mr-1 w-3 text-center"></i><strong
+                                    class="text-slate-800">RDN-built personalized training & nutrition</strong></li>
+                            <li><i class="fas fa-vial text-sky-500 mr-1 w-3 text-center"></i>Lactate testing & VO2 max
+                                analysis</li>
+                            <li><i class="fas fa-running text-sky-500 mr-1 w-3 text-center"></i>Proven results: 5K to
+                                ultramarathon</li>
+                            <li><i class="fas fa-mobile-alt text-sky-500 mr-1 w-3 text-center"></i>Final Surge app ·
+                                monthly coaching calls</li>
+                            <li><i class="fas fa-handshake text-sky-500 mr-1 w-3 text-center"></i>No contracts ·
+                                month-to-month · 3 tiers</li>
+                        </ul>
+                        <p class="text-[9px] text-bears-gold font-semibold mt-2">✨ Recent parent results: 10-min Half PR
+                            · 1-min 5K PR · 50-mile finisher</p>
+                        <div class="mt-2 pt-2 border-t border-slate-100 text-center">
+                            <span class="text-lg font-bold text-bears-navy">$130–$299</span>
+                            <span class="text-[9px] text-gray-400 block">/month</span>
+                            <span class="text-[8px] text-green-600 font-semibold block mt-0.5">50% off for Bears or Cubs
+                                parents!</span>
+                            <span class="text-[8px] text-slate-500 block mt-0.5">Perfect for: First 5K runners to Boston
+                                qualifiers</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── 2. SUMMER BEARS (MS/HS) ── -->
+                <div
+                    class="program-card rounded-xl overflow-hidden border-2 border-bears-gold shadow-lg flex flex-col relative">
+                    <div
+                        class="absolute top-2 right-2 z-10 bg-bears-gold text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide shadow">
+                        XC pre-season prep for middle & high school runners</div>
+                    <div class="print-card-img relative h-[145px] overflow-hidden">
+                        <img src="nxr-full-team.jpg" alt="Bears TC at Nike Regionals"
+                            class="w-full h-full object-cover object-[center_25%]">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 p-3">
+                            <h3 class="text-white text-lg font-bold leading-tight drop-shadow">SUMMER BEARS</h3>
+                            <p class="text-bears-gold-light text-[10px] font-medium">Middle & High School (Incoming
+                                6th–12th Grade) · Summer Bears XC</p>
+                        </div>
+                    </div>
+                    <div class="p-3 flex-1 flex flex-col bg-white">
+                        <ul class="text-[10px] space-y-1 text-gray-600 flex-1">
+                            <li><i class="fas fa-calendar-alt text-bears-gold mr-1 w-3 text-center"></i>Mon, Thu & Sat ·
+                                8:15–10:00 AM · 3-4x/week</li>
+                            <li><i class="fas fa-running text-bears-gold mr-1 w-3 text-center"></i>XC pre-season prep &
+                                base building (optional local meets)</li>
+                            <li><i class="fas fa-users text-bears-gold mr-1 w-3 text-center"></i>USATF membership & meet
+                                fees separate</li>
+                            <li><i class="fas fa-tshirt text-bears-gold mr-1 w-3 text-center"></i>Team T-shirt included
+                            </li>
+                            <li><i class="fas fa-vest-patches text-bears-gold mr-1 w-3 text-center"></i>Racing singlet
+                                available</li>
+                        </ul>
+                        <div class="mt-2 pt-2 border-t border-slate-100 text-center">
+                            <span class="text-lg font-bold text-bears-navy">$300</span>
+                            <span class="text-[9px] text-gray-400 block">full summer · June 1 – Aug 7</span>
+                            <span class="text-[8px] text-green-600 font-semibold block mt-0.5">2nd athlete 10% off · 3rd
+                                athlete 15% off</span>
+                            <span class="text-[7px] text-bears-gold font-bold block mt-0.5">🎉 4th+ Athlete FREE Across
+                                All Programs!</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── 3. SUMMER CUBS ── -->
+                <div class="program-card rounded-xl overflow-hidden border border-slate-200 shadow-sm flex flex-col">
+                    <div class="print-card-img relative h-[145px] overflow-hidden">
+                        <img src="cubs-girl-racing.jpg" alt="Cubs athlete racing"
+                            class="w-full h-full object-cover object-top">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                        <div class="absolute top-2 left-2 z-10">
+                            <span
+                                class="bg-green-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide shadow">New
+                                Program</span>
+                        </div>
+                        <div class="absolute bottom-0 left-0 p-3">
+                            <h3 class="text-white text-lg font-bold leading-tight drop-shadow">SUMMER CUBS</h3>
+                            <p class="text-green-200 text-[10px] font-medium">Ages 7–11 · Summer Cubs</p>
+                        </div>
+                    </div>
+                    <div class="p-3 flex-1 flex flex-col bg-white">
+                        <ul class="text-[10px] space-y-1 text-gray-600 flex-1">
+                            <li><i class="fas fa-calendar-alt text-green-500 mr-1 w-3 text-center"></i>Mon & Thu ·
+                                8:15–10:00 AM</li>
+                            <li><i class="fas fa-user-shield text-green-500 mr-1 w-3 text-center"></i>2 USATF &
+                                SafeSport certified Cubs coaches</li>
+                            <li><i
+                                    class="fas fa-chalkboard-teacher text-green-500 mr-1 w-3 text-center"></i>Elementary/middle
+                                specialists</li>
+                            <li><i class="fas fa-tshirt text-green-500 mr-1 w-3 text-center"></i>Cubs T-shirt included
+                            </li>
+                            <li><i class="fas fa-gamepad text-green-500 mr-1 w-3 text-center"></i>Fun-first: games,
+                                agility & confidence</li>
+                        </ul>
+                        <div class="mt-2 pt-2 border-t border-slate-100 text-center">
+                            <span class="text-lg font-bold text-bears-navy">$165</span>
+                            <span class="text-[9px] text-gray-400 block">full summer · additional siblings $95
+                                each</span>
+                            <span class="text-[7px] text-bears-gold font-bold block mt-0.5">🎉 4th+ Athlete FREE Across
+                                All Programs!</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ═══════════ FAMILY DISCOUNT BOX ═══════════ -->
+            <div id="print-family"
+                class="bg-gradient-to-r from-amber-50 to-bears-gold/10 border-2 border-bears-gold rounded-xl p-4 mb-4 print-break-inside-avoid">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="text-lg">🎉</span>
+                    <h3 class="font-bold text-bears-navy text-sm uppercase brand-font tracking-wide">Family Discount:
+                        4th+ Athlete FREE!</h3>
+                </div>
+                <p class="text-[10px] text-gray-600 mb-2">When you register 4 or more athletes, your 4th+ is <strong
+                        class="text-bears-navy">completely FREE!</strong> Mix and match Cubs & Bears programs — here's
+                    how families save:</p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    <div class="bg-white rounded-lg p-2 border border-slate-200 text-center">
+                        <div class="text-[8px] text-gray-500 font-semibold uppercase mb-0.5">1 Bear + 3 Cubs</div>
+                        <div class="text-[9px] text-gray-600">$300 + $95 + $95 + <span
+                                class="text-green-600 font-bold">FREE</span></div>
+                        <div class="text-sm font-bold text-bears-navy mt-0.5">$490</div>
+                    </div>
+                    <div class="bg-white rounded-lg p-2 border border-slate-200 text-center">
+                        <div class="text-[8px] text-gray-500 font-semibold uppercase mb-0.5">2 Bears + 2 Cubs</div>
+                        <div class="text-[9px] text-gray-600">$570 + $95 + <span
+                                class="text-green-600 font-bold">FREE</span></div>
+                        <div class="text-sm font-bold text-bears-navy mt-0.5">$665</div>
+                    </div>
+                    <div class="bg-white rounded-lg p-2 border border-slate-200 text-center">
+                        <div class="text-[8px] text-gray-500 font-semibold uppercase mb-0.5">3 Bears + 1 Cub</div>
+                        <div class="text-[9px] text-gray-600">$825 + <span class="text-green-600 font-bold">FREE</span>
+                        </div>
+                        <div class="text-sm font-bold text-bears-navy mt-0.5">$825</div>
+                    </div>
+                    <div class="bg-white rounded-lg p-2 border border-slate-200 text-center">
+                        <div class="text-[8px] text-gray-500 font-semibold uppercase mb-0.5">3 Cubs + 1 Bear</div>
+                        <div class="text-[9px] text-gray-600">$300 + $95 + $95 + $95</div>
+                        <div class="text-sm font-bold text-bears-navy mt-0.5">$585</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════ CREDENTIALS BAR ═══════════ -->
+            <div id="print-creds" class="bg-bears-navy text-white rounded-lg p-3 mb-4 print-break-inside-avoid">
+                <div class="grid grid-cols-4 gap-2 text-center">
+                    <div>
+                        <div class="text-bears-gold text-lg font-bold brand-font">RDN</div>
+                        <div class="text-[9px] text-gray-300 uppercase tracking-wide leading-tight">Sports
+                            Dietitian<br>On Staff</div>
+                    </div>
+                    <div>
+                        <div class="text-bears-gold text-lg font-bold brand-font">USATF</div>
+                        <div class="text-[9px] text-gray-300 uppercase tracking-wide leading-tight">
+                            Certified<br>Coaching Staff</div>
+                    </div>
+                    <div>
+                        <div class="text-bears-gold text-lg font-bold brand-font">VDOT</div>
+                        <div class="text-[9px] text-gray-300 uppercase tracking-wide leading-tight">Daniels
+                            Running<br>Formula</div>
+                    </div>
+                    <div>
+                        <div class="text-bears-gold text-lg font-bold brand-font">CSPC</div>
+                        <div class="text-[9px] text-gray-300 uppercase tracking-wide leading-tight">Certified
+                            Sports<br>Performance Coach</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════ COACHES ROW ═══════════ -->
+            <div id="print-coaches" class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4 print-break-inside-avoid">
+                <!-- Luke -->
+                <div class="bg-slate-50 rounded-lg p-3 border border-slate-200">
+                    <div class="flex items-center gap-2 mb-1">
+                        <div
+                            class="w-6 h-6 rounded-full bg-bears-gold text-white flex items-center justify-center flex-shrink-0 text-[10px] font-bold">
+                            LR</div>
+                        <div>
+                            <h4 class="font-bold text-bears-navy text-[12px] leading-tight">Luke Rodriguez</h4>
+                            <p class="text-[8px] text-amber-600 font-medium uppercase tracking-wide">Head Coach · RDN
+                            </p>
+                        </div>
+                    </div>
+                    <p class="text-[9px] text-gray-500 leading-relaxed">
+                        M.S. Sports Nutrition · Published RED-S researcher · USATF L1 · VDOT Certified<br>
+                        Former teacher · 7 yrs coaching · Head XC Coach, Palmer Ridge HS · 14:47 5K · Backyard 50K up
+                        Pikes Peak
+                    </p>
+                </div>
+                <!-- Zev -->
+                <div class="bg-slate-50 rounded-lg p-3 border border-slate-200">
+                    <div class="flex items-center gap-2 mb-1">
+                        <div
+                            class="w-6 h-6 rounded-full bg-slate-700 text-white flex items-center justify-center flex-shrink-0 text-[10px] font-bold">
+                            ZC</div>
+                        <div>
+                            <h4 class="font-bold text-bears-navy text-[12px] leading-tight">Zev Cayiem</h4>
+                            <p class="text-[8px] text-amber-600 font-medium uppercase tracking-wide">Assoc. Head Coach ·
+                                CSPC</p>
+                        </div>
+                    </div>
+                    <p class="text-[9px] text-gray-500 leading-relaxed">
+                        2028 Olympic Trials Hopeful · 15:11 5K · 69:00 Half · 2:35 Marathon<br>
+                        8 yrs coaching in NCAA · Aided UCCS & Regis — to program-best finishes
+                    </p>
+                </div>
+            </div>
+
+            <!-- ═══════════ DUAL QR / CTA SECTION ═══════════ -->
+            <div id="print-qr" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 print-break-inside-avoid">
+
+                <!-- Register QR -->
+                <div class="bg-slate-50 rounded-xl border border-slate-200 p-4 flex items-center gap-4">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=https://www.bearstc.org/youth-track-cross-country-monument%3Futm_source%3Dflyer%26utm_medium%3Dprint%26utm_campaign%3Dsummer2026"
+                        alt="Scan to register"
+                        class="w-24 h-24 border border-gray-300 p-1.5 bg-white rounded-lg shadow-sm">
+                    <div>
+                        <h4 class="font-bold text-bears-navy text-sm uppercase brand-font tracking-wide">Register Today
+                        </h4>
+                        <p class="text-[10px] text-gray-500 mt-0.5">Scan to visit <span
+                                class="font-semibold text-slate-700">bearstc.org</span></p>
+                        <p class="text-[10px] text-gray-500 mt-0.5"><i
+                                class="fas fa-phone text-bears-gold mr-1 text-[8px]"></i>(775) 294-1429</p>
+                        <p class="text-[10px] text-gray-500"><i
+                                class="fas fa-envelope text-bears-gold mr-1 text-[8px]"></i>info@bearstc.org</p>
+                        <div class="mt-1.5">
+                            <span
+                                class="bg-bears-gold text-bears-navy font-bold text-[9px] px-2.5 py-1 rounded uppercase tracking-wider shadow-sm inline-block">
+                                FREE Discovery Call for Families & Athletes →
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-gradient-to-br from-indigo-50 to-slate-50 rounded-xl border border-indigo-200 p-4 flex items-center gap-4 relative">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=https://www.bearstc.org/bear-vdot-pace-calculator%3Futm_source%3Dflyer%26utm_medium%3Dprint%26utm_campaign%3Dsummer2026"
+                        alt="Scan for Pace Calculator"
+                        class="w-24 h-24 border border-indigo-200 p-1.5 bg-white rounded-lg shadow-sm">
+                    <div>
+                        <h4 class="font-bold text-bears-navy text-sm uppercase brand-font tracking-wide">Free Pace
+                            Calculator</h4>
+                        <p class="text-[10px] text-gray-500 mt-0.5">Training zones · Race paces</p>
+                        <p class="text-[10px] text-gray-500">CO Springs course predictions</p>
+                        <p class="text-[10px] text-indigo-500 font-medium mt-0.5">Powered by Daniels' Running Formula
+                        </p>
+                        <div class="mt-1.5">
+                            <span
+                                class="bg-indigo-500 text-white font-bold text-[9px] px-2.5 py-1 rounded uppercase tracking-wider shadow-sm inline-block">
+                                Bonus for Runners — Try It Free →
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ═══════════ FOOTER BAR ═══════════ -->
+        <div id="print-footer" class="bg-bears-navy text-white px-6 py-3">
+            <div class="flex flex-wrap justify-center items-center gap-x-4 gap-y-1 text-[10px]">
+                <span class="font-bold brand-font text-bears-gold tracking-wide">BEARS TRACK CLUB</span>
+                <span class="text-gray-400">|</span>
+                <span>Monument, Colorado</span>
+                <span class="text-gray-400">|</span>
+                <span><i class="fas fa-globe text-bears-gold mr-1"></i>bearstc.org</span>
+                <span class="text-gray-400">|</span>
+                <span><i class="fas fa-phone text-bears-gold mr-1"></i>(775) 294-1429</span>
+                <span class="text-gray-400">|</span>
+                <span><i class="fas fa-envelope text-bears-gold mr-1"></i>info@bearstc.org</span>
+                <span class="text-gray-400">|</span>
+                <span><i class="fab fa-instagram text-bears-gold mr-1"></i>@bears_tc</span>
+                <span class="text-gray-400">|</span>
+                <span><i class="fab fa-facebook text-bears-gold mr-1"></i>Bears Track Club</span>
+            </div>
+            <p class="text-center text-[9px] text-gray-400 mt-1.5">Know a runner? Please share or snap a photo and send
+                it on!</p>
+        </div>
+
+    </div>
+
+    <!-- Print Button -->
+    <div class="mt-4 no-print">
+        <button onclick="window.print()"
+            class="bg-bears-navy text-white px-6 py-2 rounded-lg font-bold text-sm uppercase tracking-wider hover:bg-slate-800 transition shadow-lg">
+            <i class="fas fa-print mr-2"></i> Print Flyer
+        </button>
+    </div>
+
+</body>
+
+</html>

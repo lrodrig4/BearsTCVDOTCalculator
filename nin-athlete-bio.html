@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bears Track Club – NIN 2026 Athlete Bio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #e8ecf1;
+            font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 560px;
+            margin: 32px auto;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, .08);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0d1b2a, #1b3a5c);
+            padding: 28px 32px;
+            text-align: center;
+        }
+
+        .header img {
+            width: 60px;
+            height: auto;
+            margin-bottom: 12px;
+        }
+
+        .header h1 {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0 0 4px 0;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, .6);
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .intro {
+            padding: 24px 32px 8px 32px;
+            font-size: 14px;
+            color: #555;
+            line-height: 1.7;
+        }
+
+        .bio-form {
+            padding: 16px 32px 32px 32px;
+        }
+
+        .bio-form label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #0d1b2a;
+            margin: 16px 0 4px 0;
+        }
+
+        .bio-form label:first-of-type {
+            margin-top: 8px;
+        }
+
+        .bio-form label.required::after {
+            content: " *";
+            color: #e8792b;
+        }
+
+        .bio-form input,
+        .bio-form select,
+        .bio-form textarea {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 14px;
+            font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+            border: 1px solid #cfd8e3;
+            border-radius: 6px;
+            background: #f9fafb;
+            color: #333;
+            transition: border-color .2s;
+        }
+
+        .bio-form input:focus,
+        .bio-form select:focus,
+        .bio-form textarea:focus {
+            outline: none;
+            border-color: #e8792b;
+            background: #fff;
+        }
+
+        .bio-form textarea {
+            min-height: 72px;
+            resize: vertical;
+        }
+
+        .bio-form select {
+            cursor: pointer;
+        }
+
+        .section-label {
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #7a8a9a;
+            margin: 24px 0 4px 0;
+            padding-top: 16px;
+            border-top: 1px solid #eee;
+            font-weight: 600;
+        }
+
+        .bio-form button {
+            display: block;
+            width: 100%;
+            margin-top: 24px;
+            padding: 14px;
+            background: #e8792b;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+            cursor: pointer;
+            transition: background .2s;
+        }
+
+        .bio-form button:hover {
+            background: #d06a22;
+        }
+
+        .bio-form button:disabled {
+            background: #b0b8c4;
+            cursor: not-allowed;
+        }
+
+        #formMessage {
+            margin-top: 12px;
+            padding: 0;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        #formMessage.error {
+            color: #d32f2f;
+            background: #fdecea;
+            padding: 10px 14px;
+            border-radius: 6px;
+        }
+
+        .success {
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 18px;
+            color: #2e7d32;
+            font-weight: 600;
+            line-height: 1.6;
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #0d1b2a, #0a1520);
+            padding: 16px 32px;
+            text-align: center;
+        }
+
+        .footer p {
+            font-size: 10px;
+            color: rgba(255, 255, 255, .45);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 24px 20px;
+            }
+
+            .intro {
+                padding: 20px 20px 8px 20px;
+            }
+
+            .bio-form {
+                padding: 12px 20px 28px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://images.squarespace-cdn.com/content/v1/66de0eef8b498e47954e2edf/5fc1bdf6-8af6-4547-8fae-51e7dbc9dc5e/BearsTCLogoWhite.png"
+                alt="Bears Track Club">
+            <h1>NIN 2026 Athlete Bio</h1>
+            <p>Nike Indoor Nationals &bull; The Armory, NYC</p>
+        </div>
+
+        <p class="intro">Nike needs a bio for each athlete competing at Indoor Nationals. Please fill out the form below
+            &mdash; it takes about 5 minutes and submits directly to Coach Luke. Fields marked with <strong
+                style="color:#e8792b;">*</strong> are required.</p>
+
+        <div class="bio-form" id="bioForm">
+            <div id="formFields">
+
+                <label class="required">Athlete Name</label>
+                <select id="athleteName">
+                    <option value="">Select your name&hellip;</option>
+                    <option>Benjamin Olds</option>
+                    <option>Axel Mason</option>
+                    <option>Lukas Sturgeon</option>
+                    <option>Jake Bossinger</option>
+                    <option>Jackson Marshall</option>
+                    <option>Preston Hall</option>
+                    <option>Esther Paulson</option>
+                </select>
+
+                <label class="required">Email</label>
+                <input type="email" id="email" placeholder="your@email.com">
+
+                <label class="required">City</label>
+                <input type="text" id="city" placeholder="e.g. Monument">
+
+                <label class="required">State</label>
+                <input type="text" id="state" placeholder="e.g. Colorado">
+
+                <label class="required">Country</label>
+                <input type="text" id="country" value="United States">
+
+                <label class="required">School</label>
+                <input type="text" id="school" placeholder="e.g. Palmer Ridge High School">
+
+                <label class="required">Graduation Year</label>
+                <input type="text" id="graduationYear" placeholder="e.g. 2027">
+
+                <label class="required">Birthdate</label>
+                <input type="date" id="birthdate">
+
+                <label class="required">Team Alias</label>
+                <input type="text" id="teamAlias" value="Bears Track Club" readonly
+                    style="background:#eef1f5;color:#666;cursor:not-allowed;">
+
+                <label class="required">Coach</label>
+                <input type="text" id="coach" value="Coach Luke Rodriguez" readonly
+                    style="background:#eef1f5;color:#666;cursor:not-allowed;">
+
+                <label class="required">Emergency Contact Name</label>
+                <input type="text" id="emergencyContactName" placeholder="e.g. Parent/Guardian name">
+
+                <label class="required">Emergency Contact Phone</label>
+                <input type="tel" id="emergencyContactPhone" placeholder="e.g. (719) 555-1234">
+
+                <p class="section-label">Optional &mdash; Honors &amp; Extras</p>
+
+                <label>Pronunciation of Your Name</label>
+                <input type="text" id="namePronunciation" placeholder="e.g. BEN-juh-min OHLDZ">
+
+                <label>College Choices</label>
+                <textarea id="collegeChoices" placeholder="List any colleges you are considering"></textarea>
+
+                <label>Track &amp; Field Honors</label>
+                <textarea id="tfHonors" placeholder="e.g. State Champion 800m, All-Conference"></textarea>
+
+                <label>Other Sports Honors</label>
+                <textarea id="otherSportsHonors" placeholder="Honors from other sports"></textarea>
+
+                <label>Academic &amp; Other Honors</label>
+                <textarea id="academicHonors" placeholder="e.g. Honor Roll, National Merit"></textarea>
+
+                <label>Noteworthy Relatives in Sports</label>
+                <textarea id="noteworthyRelatives" placeholder="Relatives and their accomplishments"></textarea>
+
+                <label>Anything Else We Should Know</label>
+                <textarea id="anythingElse" placeholder="Anything else you'd like to share"></textarea>
+
+                <button type="button" onclick="submitBio()">Submit Athlete Bio &rarr;</button>
+                <div id="formMessage"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Bears Track Club &bull; Monument, CO &bull; bearstc.org</p>
+        </div>
+    </div>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx3qSjFUlITFmxan9NclBkpEO5ojgGEm8lnA6PQSmMBP5OzP2gMfsW_wKqkH2OIvykG/exec";
+        async function submitBio() {
+            const btn = document.querySelector('.bio-form button');
+            const msg = document.getElementById('formMessage');
+            const required = {
+                athleteName: document.getElementById('athleteName').value,
+                city: document.getElementById('city').value,
+                state: document.getElementById('state').value,
+                country: document.getElementById('country').value,
+                email: document.getElementById('email').value,
+                graduationYear: document.getElementById('graduationYear').value,
+                teamAlias: document.getElementById('teamAlias').value,
+                coach: document.getElementById('coach').value,
+                school: document.getElementById('school').value,
+                birthdate: document.getElementById('birthdate').value,
+                emergencyContactName: document.getElementById('emergencyContactName').value,
+                emergencyContactPhone: document.getElementById('emergencyContactPhone').value,
+            };
+            for (const [k, v] of Object.entries(required)) {
+                if (!v || v.trim() === '') {
+                    msg.className = 'error';
+                    msg.textContent = 'Please fill in all required fields (marked with *).';
+                    return;
+                }
+            }
+            const data = {
+                ...required,
+                namePronunciation: document.getElementById('namePronunciation').value,
+                collegeChoices: document.getElementById('collegeChoices').value,
+                tfHonors: document.getElementById('tfHonors').value,
+                otherSportsHonors: document.getElementById('otherSportsHonors').value,
+                academicHonors: document.getElementById('academicHonors').value,
+                noteworthyRelatives: document.getElementById('noteworthyRelatives').value,
+                anythingElse: document.getElementById('anythingElse').value,
+            };
+            btn.textContent = 'Submitting...';
+            btn.disabled = true;
+            msg.textContent = '';
+            msg.className = '';
+            try {
+                const resp = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) });
+                const result = await resp.json();
+                if (result.status === 'success') {
+                    document.getElementById('formFields').innerHTML = '<div class="success">&check; Thank you! Your athlete bio has been submitted successfully.<br><span style="font-size:14px;color:#666;font-weight:400;">You can close this page.</span></div>';
+                } else { throw new Error(result.message || 'Unknown error'); }
+            } catch (err) {
+                msg.className = 'error';
+                msg.textContent = 'Submission failed: ' + err.message + '. Please try again or contact Coach Luke.';
+                btn.textContent = 'Submit Athlete Bio \u2192';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>

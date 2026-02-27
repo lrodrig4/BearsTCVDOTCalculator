@@ -237,7 +237,7 @@
 
         .week-row {
             display: grid;
-            grid-template-columns: 55px repeat(7, 1fr);
+            grid-template-columns: repeat(7, 1fr);
             gap: 1px;
             margin-bottom: 1px;
             background: #d4dbe5;
@@ -262,17 +262,7 @@
         }
 
         .week-num {
-            background: var(--navy);
-            color: var(--gold);
-            font-family: 'Oswald', sans-serif;
-            font-size: .9em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            writing-mode: vertical-rl;
-            text-orientation: mixed;
-            letter-spacing: 1px;
-            min-height: 80px;
+            display: none;
         }
 
         .day-cell {
@@ -583,7 +573,7 @@
 
         @media(max-width:900px) {
             .week-row {
-                grid-template-columns: 40px repeat(7, 1fr);
+                grid-template-columns: repeat(7, 1fr);
             }
 
             .day-cell {

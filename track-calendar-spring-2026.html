@@ -28,6 +28,10 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Roboto', sans-serif;
             background: linear-gradient(180deg, #e8edf3 0%, var(--light) 300px);
@@ -214,6 +218,50 @@
             padding: 0 15px 30px;
         }
 
+        /* --- Sticky month nav --- */
+        .month-nav {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: var(--dark);
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            padding: 8px 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .2);
+        }
+
+        .month-nav button {
+            font-family: 'Oswald', sans-serif;
+            font-size: .85em;
+            letter-spacing: 1px;
+            padding: 6px 16px;
+            border: 1px solid rgba(255, 255, 255, .15);
+            border-radius: 20px;
+            background: transparent;
+            color: rgba(255, 255, 255, .7);
+            cursor: pointer;
+            transition: all .2s;
+            text-transform: uppercase;
+        }
+
+        .month-nav button:hover {
+            background: rgba(255, 255, 255, .1);
+            color: #fff;
+        }
+
+        .month-nav button.active {
+            background: var(--gold);
+            color: var(--dark);
+            border-color: var(--gold);
+            font-weight: 600;
+        }
+
+        /* --- Collapsible month sections --- */
+        .month-section {
+            margin-bottom: 5px;
+        }
+
         .month-header {
             font-family: 'Oswald', sans-serif;
             font-size: 1.6em;
@@ -222,6 +270,13 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            cursor: pointer;
+            user-select: none;
+            transition: color .2s;
+        }
+
+        .month-header:hover {
+            color: var(--gold);
         }
 
         .month-header::after {
@@ -231,8 +286,91 @@
             background: linear-gradient(90deg, var(--navy), transparent);
         }
 
-        .month-header i {
+        .month-header i.fa-calendar-alt {
             color: var(--gold);
+        }
+
+        .month-header .chevron {
+            font-size: .55em;
+            transition: transform .3s;
+            margin-left: auto;
+            flex-shrink: 0;
+            color: var(--navy);
+        }
+
+        .month-header .chevron::after {
+            display: none;
+        }
+
+        .month-section.collapsed .chevron {
+            transform: rotate(-90deg);
+        }
+
+        .month-body {
+            overflow: hidden;
+            transition: max-height .4s ease, opacity .3s ease;
+            max-height: 2000px;
+            opacity: 1;
+        }
+
+        .month-section.collapsed .month-body {
+            max-height: 0;
+            opacity: 0;
+        }
+
+        /* --- Current week highlight --- */
+        .week-row.current-week {
+            outline: 2px solid var(--gold);
+            outline-offset: -1px;
+            border-radius: 4px;
+        }
+
+        /* --- Collapsible locations toggle --- */
+        .section-toggle {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.5em;
+            color: var(--navy);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            user-select: none;
+            transition: color .2s;
+        }
+
+        .section-toggle:hover {
+            color: var(--gold);
+        }
+
+        .section-toggle::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, var(--navy), transparent);
+        }
+
+        .section-toggle .toggle-chevron {
+            font-size: .55em;
+            transition: transform .3s;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .section-toggle.collapsed-toggle .toggle-chevron {
+            transform: rotate(-90deg);
+        }
+
+        .collapsible-body {
+            overflow: hidden;
+            transition: max-height .4s ease, opacity .3s ease;
+            max-height: 3000px;
+            opacity: 1;
+        }
+
+        .collapsible-body.collapsed-content {
+            max-height: 0;
+            opacity: 0;
         }
 
         .week-row {
@@ -447,23 +585,6 @@
 
         .locations-section {
             margin-top: 30px;
-        }
-
-        .locations-section h2 {
-            font-family: 'Oswald', sans-serif;
-            font-size: 1.5em;
-            color: var(--navy);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .locations-section h2::after {
-            content: '';
-            flex: 1;
-            height: 2px;
-            background: linear-gradient(90deg, var(--navy), transparent);
         }
 
         .locations-grid {
@@ -831,13 +952,20 @@
         <span><i class="fas fa-calendar-check"></i> <b>Bookmark this page</b> — it stays up to date all season.</span>
     </div>
 
+    <div class="month-nav" id="month-nav"></div>
+
     <div class="container" id="calendar-root"></div>
 
     <div class="container locations-section">
-        <h2><i class="fas fa-map-marked-alt"
+        <div class="section-toggle collapsed-toggle" id="locations-toggle" onclick="toggleLocations()">
+            <i class="fas fa-map-marked-alt"
                 style="color:var(--gold);background:var(--navy);padding:8px;border-radius:50%;font-size:.7em;"></i> Meet
-            Locations — Tap for Directions</h2>
-        <div class="locations-grid" id="locations-grid"></div>
+            Locations — Tap for Directions
+            <i class="fas fa-chevron-down toggle-chevron"></i>
+        </div>
+        <div class="collapsible-body collapsed-content" id="locations-body">
+            <div class="locations-grid" id="locations-grid"></div>
+        </div>
     </div>
 
     <div class="footer">
@@ -1003,15 +1131,77 @@
             }
         ];
 
+        // --- Toggle locations ---
+        function toggleLocations() {
+            const t = document.getElementById('locations-toggle');
+            const b = document.getElementById('locations-body');
+            t.classList.toggle('collapsed-toggle');
+            b.classList.toggle('collapsed-content');
+        }
+
+        // --- Toggle month ---
+        function toggleMonth(id) {
+            document.getElementById(id).classList.toggle('collapsed');
+        }
+
+        // --- Build calendar ---
         const root = document.getElementById('calendar-root');
+        const nav = document.getElementById('month-nav');
+        const months = [];
         let curMonth = '';
-        WEEKS.forEach(w => {
+        let curSection = null;
+        let curBody = null;
+
+        // Determine current week based on today's date
+        const today = new Date();
+        const todayStr = `${today.getMonth() + 1}/${today.getDate()}`;
+
+        WEEKS.forEach((w, wi) => {
             if (w.month && w.month !== curMonth) {
                 curMonth = w.month;
-                root.innerHTML += `<div class="month-header"><i class="fas fa-calendar-alt"></i>${curMonth}</div>
-<div class="week-row header-row"><div class="day-header" style="background:var(--gold);color:var(--dark);">WK</div><div class="day-header">Mon</div><div class="day-header">Tue</div><div class="day-header">Wed</div><div class="day-header">Thu</div><div class="day-header">Fri</div><div class="day-header">Sat</div><div class="day-header">Sun</div></div>`;
+                const monthId = 'month-' + curMonth.replace(/\s/g, '-').toLowerCase();
+                months.push({ name: curMonth, id: monthId });
+
+                curSection = document.createElement('div');
+                curSection.className = 'month-section collapsed';
+                curSection.id = monthId;
+
+                const header = document.createElement('div');
+                header.className = 'month-header';
+                header.onclick = () => toggleMonth(monthId);
+                header.innerHTML = `<i class="fas fa-calendar-alt"></i>${curMonth}<i class="fas fa-chevron-down chevron"></i>`;
+                curSection.appendChild(header);
+
+                curBody = document.createElement('div');
+                curBody.className = 'month-body';
+
+                // Desktop header row
+                const hr = document.createElement('div');
+                hr.className = 'week-row header-row';
+                hr.innerHTML = `<div class="day-header">Mon</div><div class="day-header">Tue</div><div class="day-header">Wed</div><div class="day-header">Thu</div><div class="day-header">Fri</div><div class="day-header">Sat</div><div class="day-header">Sun</div>`;
+                curBody.appendChild(hr);
+
+                curSection.appendChild(curBody);
+                root.appendChild(curSection);
             }
-            let html = `<div class="week-row"><div class="week-num">${w.wk}</div>`;
+
+            const weekDiv = document.createElement('div');
+            weekDiv.className = 'week-row';
+            weekDiv.innerHTML = `<div class="week-num">${w.wk}</div>`;
+
+            // Check if this is the current week
+            let isCurrentWeek = false;
+            w.days.forEach(day => {
+                const match = day.d.match(/(\d+)\/(\d+)/);
+                if (match) {
+                    const m = parseInt(match[1]), d = parseInt(match[2]);
+                    const dayDate = new Date(2026, m - 1, d);
+                    const diff = (today - dayDate) / 86400000;
+                    if (diff >= 0 && diff < 7) isCurrentWeek = true;
+                }
+            });
+            if (isCurrentWeek) weekDiv.classList.add('current-week');
+
             w.days.forEach(day => {
                 let cls = 'day-cell';
                 if (day.type === 'meet') cls += ' meet';
@@ -1047,7 +1237,6 @@
                     let label = baseLbl + time;
                     let prUrl = 'https://maps.google.com/?q=Palmer+Ridge+High+School+19255+Monument+Hill+Rd+Monument+CO+80132';
                     let url = day.locUrl || (day.loc === 'pr' ? prUrl : '');
-                    // Skip Palmer Ridge badge on normal practice days (it's the default)
                     let skipPR = (day.loc === 'pr' && !day.meet);
                     if (!skipPR) {
                         if (url) {
@@ -1057,12 +1246,48 @@
                         }
                     }
                 }
-                html += `<div class="${cls}">${content}</div>`;
+                weekDiv.innerHTML += `<div class="${cls}">${content}</div>`;
             });
-            html += `</div>`;
-            root.innerHTML += html;
+
+            curBody.appendChild(weekDiv);
+
+            // Auto-expand the month containing the current week
+            if (isCurrentWeek && curSection) {
+                curSection.classList.remove('collapsed');
+            }
         });
 
+        // If no current week found (season hasn't started or ended), expand the first month
+        const anyExpanded = document.querySelector('.month-section:not(.collapsed)');
+        if (!anyExpanded && months.length) {
+            document.getElementById(months[0].id).classList.remove('collapsed');
+        }
+
+        // --- Build month nav ---
+        months.forEach(m => {
+            const btn = document.createElement('button');
+            btn.textContent = m.name.replace(' 2026', '');
+            btn.onclick = () => {
+                const sec = document.getElementById(m.id);
+                sec.classList.remove('collapsed');
+                sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Highlight active nav
+                nav.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            };
+            nav.appendChild(btn);
+        });
+
+        // Highlight first nav button
+        if (nav.children.length) {
+            const expandedMonth = document.querySelector('.month-section:not(.collapsed)');
+            if (expandedMonth) {
+                const idx = months.findIndex(m => m.id === expandedMonth.id);
+                if (idx >= 0) nav.children[idx].classList.add('active');
+            }
+        }
+
+        // --- Build locations ---
         const lg = document.getElementById('locations-grid');
         Object.entries(LOCATIONS).forEach(([name, loc]) => {
             lg.innerHTML += `<a class="loc-card" href="${loc.map}" target="_blank" rel="noopener"><div class="pin"><i class="fas fa-map-pin"></i></div><div><h3>${name}</h3><p>${loc.addr}</p><div class="meets">${loc.meets.join(' | ')}</div></div></a>`;

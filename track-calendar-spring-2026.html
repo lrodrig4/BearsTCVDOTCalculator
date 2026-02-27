@@ -594,21 +594,174 @@
         }
 
         @media(max-width:600px) {
+            .header {
+                padding: 20px 15px;
+            }
+
             .header h1 {
-                font-size: 1.4em;
+                font-size: 1.3em;
+                letter-spacing: 1px;
+            }
+
+            .header .subtitle {
+                font-size: .8em;
+                letter-spacing: 2px;
             }
 
             .header-content {
                 flex-direction: column;
-                gap: 10px;
+                gap: 8px;
             }
 
-            .container {
-                overflow-x: auto;
+            .header img {
+                width: 65px;
+                height: 65px;
+            }
+
+            .info-bar {
+                gap: 6px 12px;
+                font-size: .75em;
+                padding: 8px 12px;
             }
 
             .callout-box {
                 flex-direction: column;
+                padding: 12px 14px;
+                gap: 10px;
+                margin: 0 10px 10px;
+            }
+
+            .callout-box .callout-item {
+                min-width: unset;
+            }
+
+            .notes-banner {
+                flex-direction: column;
+                font-size: .78em;
+                padding: 10px 14px;
+                margin: 0 10px 12px;
+                gap: 4px;
+                text-align: center;
+            }
+
+            .container {
+                padding: 0 8px 20px;
+            }
+
+            .month-header {
+                font-size: 1.3em;
+                margin: 18px 0 8px;
+            }
+
+            /* --- MOBILE CALENDAR: Card-based list view --- */
+            .week-row.header-row {
+                display: none;
+            }
+
+            .week-row {
+                display: flex;
+                flex-direction: column;
+                gap: 0;
+                background: transparent;
+                margin-bottom: 10px;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 1px 6px rgba(0, 0, 0, .08);
+            }
+
+            .week-num {
+                writing-mode: horizontal-tb;
+                text-orientation: initial;
+                min-height: unset;
+                padding: 6px 12px;
+                font-size: .75em;
+                letter-spacing: 1.5px;
+                justify-content: flex-start;
+                border-radius: 0;
+            }
+
+            .day-cell {
+                display: flex;
+                align-items: flex-start;
+                gap: 8px;
+                padding: 10px 12px;
+                min-height: unset;
+                font-size: .82em;
+                border-bottom: 1px solid #eef1f5;
+            }
+
+            .day-cell:last-child {
+                border-bottom: none;
+            }
+
+            .day-cell:hover {
+                transform: none;
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            .day-cell .date {
+                font-size: 1em;
+                min-width: 58px;
+                flex-shrink: 0;
+            }
+
+            .day-cell .mobile-details {
+                flex: 1;
+            }
+
+            .badge {
+                font-size: .65em;
+                vertical-align: middle;
+            }
+
+            .meet-name {
+                font-size: .95em;
+            }
+
+            .loc-badge {
+                font-size: .6em;
+                margin-top: 4px;
+            }
+
+            .day-plan {
+                font-size: .85em;
+            }
+
+            /* --- Meet location cards --- */
+            .locations-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .loc-card {
+                padding: 12px;
+            }
+
+            .loc-card .pin {
+                width: 34px;
+                height: 34px;
+                font-size: .9em;
+            }
+
+            .loc-card h3 {
+                font-size: .9em;
+            }
+
+            .locations-section h2 {
+                font-size: 1.2em;
+            }
+
+            .footer {
+                padding: 20px 15px;
+            }
+
+            .footer h3 {
+                font-size: .9em;
+            }
+
+            .footer .links {
+                font-size: .75em;
             }
         }
 
@@ -734,7 +887,7 @@
             "PPAC/LP JV Championship": { addr: "Lewis Palmer High School, Monument, CO", map: "https://maps.google.com/?q=Lewis+Palmer+High+School+Monument+CO", meets: ["May 4 · JV"] },
             "Teddy's Last Chance": { addr: "Roosevelt High School, Johnstown, CO", map: "https://maps.google.com/?q=Roosevelt+High+School+Johnstown+CO", meets: ["May 9 · Varsity"] },
             "CHSAA State Championships": { addr: "Jeffco Stadium, Lakewood, CO", map: "https://maps.google.com/?q=Jeffco+Stadium+Lakewood+CO", meets: ["May 14–16 · 4A Finals"] },
-            "Running Lane Nationals": { addr: "Huntsville, AL", map: "https://maps.google.com/?q=Huntsville+AL", meets: ["May 22–23 · Invite Only"] }
+            "Running Lane Nationals": { addr: "Huntsville, AL", map: "https://maps.google.com/?q=Huntsville+AL", meets: ["May 22–23 · Open Registration"] }
         };
 
         const WEEKS = [

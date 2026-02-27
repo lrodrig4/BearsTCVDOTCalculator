@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Palmer Ridge Track Distance — Spring 2026 Season Calendar</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --navy: #1F2D46;
+            --gold: #c9a227;
+            --orange: #e8792b;
+            --dark: #0f172a;
+            --light: #f1f5f9;
+            --meet-bg: #fff3e0;
+            --state-bg: #fff9c4;
+            --travel-bg: #e0f7fa;
+            --off-bg: #f5f5f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(180deg, #e8edf3 0%, var(--light) 300px);
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--navy) 60%, #2a4a6b 100%);
+            color: #fff;
+            padding: 35px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54.627 0l.83.828-1.415 1.415L51.8 0h2.827zM5.373 0l-.83.828L5.96 2.243 8.2 0H5.373zM48.97 0l3.657 3.657-1.414 1.414L46.143 0h2.828z' fill='%23ffffff' fill-opacity='0.03'/%3E%3C/svg%3E") repeat;
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header img {
+            width: 95px;
+            height: 95px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .4));
+        }
+
+        .header h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.2em;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .header h1 span {
+            color: var(--gold);
+        }
+
+        .header .subtitle {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1em;
+            letter-spacing: 4px;
+            color: rgba(255, 255, 255, .7);
+            margin-top: 2px;
+        }
+
+        .header .update-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, .15);
+            border: 1px solid rgba(255, 255, 255, .25);
+            border-radius: 20px;
+            padding: 4px 16px;
+            font-size: .75em;
+            margin-top: 8px;
+            color: var(--gold);
+        }
+
+        .info-bar {
+            max-width: 1300px;
+            margin: 15px auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px 25px;
+            padding: 10px 20px;
+            font-size: .85em;
+            color: #555;
+        }
+
+        .info-bar span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .info-bar .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+
+        .dot.meet {
+            background: var(--orange);
+        }
+
+        .dot.train {
+            background: var(--navy);
+        }
+
+        .dot.off {
+            background: #ccc;
+        }
+
+        .dot.state {
+            background: #ffd600;
+        }
+
+        .dot.travel {
+            background: #00bcd4;
+        }
+
+        .callout-box {
+            max-width: 1300px;
+            margin: 0 auto 10px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 18px 22px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px 30px;
+            align-items: flex-start;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .06);
+        }
+
+        .callout-box .callout-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .callout-box .callout-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1em;
+            color: #fff;
+        }
+
+        .callout-box .callout-text {
+            font-size: .82em;
+            line-height: 1.4;
+        }
+
+        .callout-box .callout-text strong {
+            display: block;
+            color: var(--navy);
+            font-size: .95em;
+            margin-bottom: 1px;
+        }
+
+        .notes-banner {
+            max-width: 1300px;
+            margin: 0 auto 15px;
+            background: var(--navy);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: .85em;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 20px;
+            align-items: center;
+        }
+
+        .notes-banner i {
+            color: var(--gold);
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 15px 30px;
+        }
+
+        .month-header {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.6em;
+            color: var(--navy);
+            margin: 25px 0 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .month-header::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, var(--navy), transparent);
+        }
+
+        .month-header i {
+            color: var(--gold);
+        }
+
+        .week-row {
+            display: grid;
+            grid-template-columns: 55px repeat(7, 1fr);
+            gap: 1px;
+            margin-bottom: 1px;
+            background: #d4dbe5;
+            border-radius: 0;
+        }
+
+        .week-row.header-row {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .week-row.header-row .day-header {
+            background: var(--navy);
+            color: #fff;
+            font-family: 'Oswald', sans-serif;
+            font-size: .85em;
+            letter-spacing: 1px;
+            padding: 8px 5px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .week-num {
+            background: var(--navy);
+            color: var(--gold);
+            font-family: 'Oswald', sans-serif;
+            font-size: .9em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            letter-spacing: 1px;
+            min-height: 80px;
+        }
+
+        .day-cell {
+            background: #fff;
+            border: none;
+            padding: 8px 8px 6px;
+            min-height: 85px;
+            font-size: .78em;
+            transition: all .25s cubic-bezier(.4, 0, .2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .day-cell:hover {
+            box-shadow: 0 4px 16px rgba(31, 45, 70, .15), 0 0 0 2px var(--gold);
+            transform: translateY(-2px) scale(1.01);
+            z-index: 5;
+            border-radius: 4px;
+        }
+
+        .day-cell .date {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 600;
+            font-size: 1.1em;
+            color: var(--navy);
+            margin-bottom: 3px;
+        }
+
+        .day-cell.meet {
+            background: var(--meet-bg);
+            border-left: 3px solid var(--orange);
+            box-shadow: inset 0 -2px 6px rgba(232, 121, 43, .06);
+        }
+
+        .day-cell.meet .date {
+            color: var(--orange);
+        }
+
+        .day-cell.state {
+            background: var(--state-bg);
+            border-left: 3px solid #ffd600;
+            box-shadow: inset 0 -2px 6px rgba(255, 214, 0, .08);
+        }
+
+        .day-cell.travel {
+            background: var(--travel-bg);
+            border-left: 3px solid #00bcd4;
+            box-shadow: inset 0 -2px 6px rgba(0, 188, 212, .06);
+        }
+
+        .day-cell.off {
+            background: var(--off-bg);
+            color: #999;
+            opacity: .7;
+        }
+
+        .badge {
+            display: inline-block;
+            font-family: 'Oswald', sans-serif;
+            font-size: .62em;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            margin-bottom: 3px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .12);
+        }
+
+        .badge.meet-badge {
+            background: var(--orange);
+            color: #fff;
+        }
+
+        .badge.state-badge {
+            background: #ffd600;
+            color: var(--dark);
+        }
+
+        .badge.jv {
+            background: #5c6bc0;
+            color: #fff;
+        }
+
+        .badge.varsity {
+            background: var(--navy);
+            color: var(--gold);
+        }
+
+        .badge.all-badge {
+            background: #66bb6a;
+            color: #fff;
+        }
+
+        .badge.race {
+            background: #e53935;
+            color: #fff;
+        }
+
+        .meet-name {
+            font-weight: 700;
+            color: var(--navy);
+            font-size: 1em;
+            margin-bottom: 2px;
+        }
+
+        .day-plan {
+            color: #555;
+            font-size: .9em;
+            line-height: 1.3;
+            margin-top: 2px;
+        }
+
+        .loc-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-family: 'Oswald', sans-serif;
+            font-size: .58em;
+            font-weight: 500;
+            padding: 3px 8px;
+            border-radius: 12px;
+            letter-spacing: .4px;
+            margin-top: 5px;
+            text-transform: uppercase;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .15);
+        }
+
+        .loc-badge.loc-pr {
+            background: linear-gradient(135deg, var(--navy) 0%, #2a4a6b 100%);
+            color: var(--gold);
+        }
+
+        .loc-badge.loc-off {
+            background: linear-gradient(135deg, #00838f 0%, #00acc1 100%);
+            color: #fff;
+        }
+
+        .loc-badge.loc-special {
+            background: linear-gradient(135deg, #6a1b9a 0%, #9c27b0 100%);
+            color: #fff;
+        }
+
+        .loc-badge i {
+            font-size: .8em;
+        }
+
+        a.loc-badge {
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        a.loc-badge:hover {
+            filter: brightness(1.15);
+            transform: scale(1.05);
+            transition: all .15s ease;
+        }
+
+        a.meet-name {
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        a.meet-name:hover {
+            text-decoration: underline;
+        }
+
+        .location-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            color: var(--orange);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: .85em;
+            margin-top: 3px;
+        }
+
+        .location-link:hover {
+            text-decoration: underline;
+        }
+
+        .locations-section {
+            margin-top: 30px;
+        }
+
+        .locations-section h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.5em;
+            color: var(--navy);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .locations-section h2::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, var(--navy), transparent);
+        }
+
+        .locations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .loc-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            transition: all .2s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .loc-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .1);
+            transform: translateY(-2px);
+            border-color: var(--orange);
+        }
+
+        .loc-card .pin {
+            width: 40px;
+            height: 40px;
+            background: var(--orange);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.1em;
+            flex-shrink: 0;
+        }
+
+        .loc-card h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1em;
+            color: var(--navy);
+            margin-bottom: 2px;
+        }
+
+        .loc-card p {
+            font-size: .8em;
+            color: #666;
+            margin: 0;
+        }
+
+        .loc-card .meets {
+            font-size: .75em;
+            color: var(--orange);
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .footer {
+            background: var(--dark);
+            color: #fff;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 30px;
+        }
+
+        .footer img {
+            width: 60px;
+            margin-bottom: 10px;
+        }
+
+        .footer h3 {
+            font-family: 'Oswald', sans-serif;
+            color: var(--gold);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .footer .links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px 20px;
+            font-size: .8em;
+            color: rgba(255, 255, 255, .7);
+            margin-bottom: 10px;
+        }
+
+        .footer .links a {
+            color: rgba(255, 255, 255, .7);
+            text-decoration: none;
+        }
+
+        .footer .links a:hover {
+            color: var(--gold);
+        }
+
+        .footer .disclaimer {
+            font-size: .7em;
+            color: rgba(255, 255, 255, .4);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        @media(max-width:900px) {
+            .week-row {
+                grid-template-columns: 40px repeat(7, 1fr);
+            }
+
+            .day-cell {
+                font-size: .65em;
+                padding: 4px;
+                min-height: 60px;
+            }
+        }
+
+        @media(max-width:600px) {
+            .header h1 {
+                font-size: 1.4em;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .container {
+                overflow-x: auto;
+            }
+
+            .callout-box {
+                flex-direction: column;
+            }
+        }
+
+        @media print {
+            .header {
+                padding: 15px;
+            }
+
+            .day-cell {
+                font-size: .65em;
+                min-height: auto;
+                padding: 4px;
+            }
+
+            .notes-banner,
+            .info-bar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="header-content">
+            <img src="https://sites-assets.playonsharedprod.playonsports.com/photos/2025/06/06/62532c93-3d7e-11f0-a30f-027d819785cb.png"
+                alt="Palmer Ridge Bears">
+            <div>
+                <h1>Palmer Ridge Track <span>Distance</span></h1>
+                <div class="subtitle">Spring 2026 Season Calendar</div>
+                <div class="update-badge"><i class="fas fa-sync-alt"></i> Updated Feb 27, 2026 · All dates subject to
+                    change</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-bar">
+        <span><span class="dot meet"></span> Meet Day</span>
+        <span><span class="dot train"></span> Practice</span>
+        <span><span class="dot state"></span> State Championship</span>
+        <span><span class="dot travel"></span> Travel Meet</span>
+        <span><span class="dot off"></span> Off / OYO</span>
+    </div>
+
+    <div class="callout-box">
+        <div class="callout-item">
+            <div class="callout-icon" style="background:var(--navy);"><i class="fas fa-mobile-alt"></i></div>
+            <div class="callout-text"><strong><i class="fas fa-arrow-right"
+                        style="color:var(--gold);font-size:.7em;"></i> Check the <a
+                        href="https://bears-tc-app.netlify.app/" target="_blank" rel="noopener"
+                        style="color:var(--gold);text-decoration:underline;">Bears TC App</a></strong> Your
+                athlete-specific daily workouts, paces, and coach notes are posted on the Bears TC app. This calendar is
+                for locations and the general plan only.</div>
+        </div>
+        <div class="callout-item">
+            <div class="callout-icon" style="background:var(--orange);"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="callout-text"><strong><i class="fas fa-arrow-right"
+                        style="color:var(--gold);font-size:.7em;"></i> Click Any Meet for Directions</strong>Tap on any
+                meet name or location card below to open Google Maps with directions. Plan travel early for away meets!
+            </div>
+        </div>
+        <div class="callout-item">
+            <div class="callout-icon" style="background:#66bb6a;"><i class="fas fa-exclamation-circle"></i></div>
+            <div class="callout-text"><strong><i class="fas fa-arrow-right"
+                        style="color:var(--gold);font-size:.7em;"></i> Not Every Athlete Runs Every Meet</strong> Talk
+                to
+                your coaches about which meets you're entered in. JV and Varsity meets are labeled accordingly. PPAC =
+                Pikes Peak Athletic Conference. RRMR = Rocky Mountain region JV series.</div>
+        </div>
+    </div>
+
+    <div class="notes-banner">
+        <span><i class="fas fa-map-pin"></i> <b>Default Location:</b> All practices are at <a
+                href="https://maps.google.com/?q=Palmer+Ridge+High+School+19255+Monument+Hill+Rd+Monument+CO+80132"
+                target="_blank" rel="noopener" style="color:#fff;text-decoration:underline;">Palmer Ridge HS</a> (3:05
+            PM) unless marked otherwise.</span>
+        <span><i class="fas fa-calendar-check"></i> <b>Bookmark this page</b> — it stays up to date all season.</span>
+    </div>
+
+    <div class="container" id="calendar-root"></div>
+
+    <div class="container locations-section">
+        <h2><i class="fas fa-map-marked-alt"
+                style="color:var(--gold);background:var(--navy);padding:8px;border-radius:50%;font-size:.7em;"></i> Meet
+            Locations — Tap for Directions</h2>
+        <div class="locations-grid" id="locations-grid"></div>
+    </div>
+
+    <div class="footer">
+        <img src="https://sites-assets.playonsharedprod.playonsports.com/photos/2025/06/06/62532c93-3d7e-11f0-a30f-027d819785cb.png"
+            alt="Palmer Ridge Bears">
+        <h3>Palmer Ridge Bears · Track Distance</h3>
+        <p style="margin:6px 0 0;font-size:.85em;opacity:.8;">Luke Rodriguez, MS, RDN — Head Distance Coach</p>
+        <div class="links">
+            <a href="https://bears-tc-app.netlify.app/" target="_blank" rel="noopener"
+                style="color:#fff;text-decoration:none;"><i class="fas fa-mobile-alt"></i> Bears TC App</a> |
+            <a href="https://www.instagram.com/PalmerRidgeTF/" target="_blank" rel="noopener"
+                style="color:#fff;text-decoration:none;"><i class="fab fa-instagram"></i> @PalmerRidgeTF</a>
+        </div>
+        <p style="margin:8px 0 0;font-size:.75em;opacity:.5;">Venues marked TBD will be confirmed closer to the meet
+            date.</p>
+        <div class="disclaimer">All dates, locations, and training are subject to change. Check the Bears TC app for
+            athlete-specific workouts and pacing. Not every athlete will run each meet — talk to your coaches.</div>
+    </div>
+
+    <script>
+        const LOCATIONS = {
+            "Wolfpack Invite": { addr: "Vista Ridge High School, Colorado Springs", map: "https://maps.google.com/?q=Vista+Ridge+High+School+Colorado+Springs+CO", meets: ["Mar 7 · Varsity"] },
+            "RRMR JV": { addr: "Monument, CO", map: "https://maps.google.com/?q=Palmer+Ridge+High+School+Monument+CO", meets: ["Mar 11 · JV"] },
+            "Nike Indoor Nationals": { addr: "The Armory, New York City", map: "https://maps.google.com/?q=The+Armory+Track+and+Field+Center+New+York+NY", meets: ["Mar 12–15 · Varsity (Esther Thu; Jake, Ben, Axel, Lucas Sat–Sun)"] },
+            "PPAC JV #1": { addr: "Classical Academy High School, Colorado Springs", map: "https://maps.google.com/?q=The+Classical+Academy+High+School+Colorado+Springs+CO", meets: ["Mar 18 · JV"] },
+            "Chandler Rotary Invitational": { addr: "Chandler High School, Chandler, AZ", map: "https://maps.google.com/?q=Chandler+High+School+Chandler+AZ", meets: ["Mar 20 · Varsity (Travel)"] },
+            "Roosevelt Power Meet": { addr: "Roosevelt High School, Johnstown, CO", map: "https://maps.google.com/?q=Roosevelt+High+School+Johnstown+CO", meets: ["Mar 27 · Varsity"] },
+            "PPAC Championship": { addr: "Cheyenne Mountain High School, Colorado Springs", map: "https://maps.google.com/?q=Cheyenne+Mountain+High+School+Colorado+Springs+CO", meets: ["Apr 2 · V/JV"] },
+            "PPAC JV #2": { addr: "TBD", map: "https://maps.google.com/?q=Colorado+Springs+CO", meets: ["Apr 8 · JV"] },
+            "TCA Titan Invite": { addr: "TCA High School, Colorado Springs", map: "https://maps.google.com/?q=The+Classical+Academy+Colorado+Springs+CO", meets: ["Apr 9 · V/JV"] },
+            "Arcadia Invitational": { addr: "Arcadia High School, Arcadia, CA", map: "https://maps.google.com/?q=Arcadia+High+School+Arcadia+CA", meets: ["Apr 10 · Varsity (Travel)"] },
+            "Randall Hess Roughrider": { addr: "Roosevelt High School, Johnstown, CO", map: "https://maps.google.com/?q=Roosevelt+High+School+Johnstown+CO", meets: ["Apr 18 · Varsity"] },
+            "Stutler Twilight": { addr: "Cherry Creek High School, Greenwood Village, CO", map: "https://maps.google.com/?q=Cherry+Creek+High+School+Greenwood+Village+CO", meets: ["Apr 25 · Varsity"] },
+            "RRMR JV Championship": { addr: "TBD", map: "https://maps.google.com/?q=Monument+CO", meets: ["Apr 22 · JV"] },
+            "Pueblo Twilight": { addr: "Dutch Clark Stadium, Pueblo, CO", map: "https://maps.google.com/?q=Dutch+Clark+Stadium+Pueblo+CO", meets: ["May 1 · Varsity"] },
+            "Doherty Spartan Invite": { addr: "Garry Berry Stadium, Colorado Springs", map: "https://maps.google.com/?q=Garry+Berry+Stadium+Colorado+Springs+CO", meets: ["May 2 · Varsity"] },
+            "PPAC/LP JV Championship": { addr: "Lewis Palmer High School, Monument, CO", map: "https://maps.google.com/?q=Lewis+Palmer+High+School+Monument+CO", meets: ["May 4 · JV"] },
+            "Teddy's Last Chance": { addr: "Roosevelt High School, Johnstown, CO", map: "https://maps.google.com/?q=Roosevelt+High+School+Johnstown+CO", meets: ["May 9 · Varsity"] },
+            "CHSAA State Championships": { addr: "Jeffco Stadium, Lakewood, CO", map: "https://maps.google.com/?q=Jeffco+Stadium+Lakewood+CO", meets: ["May 14–16 · 4A Finals"] },
+            "Running Lane Nationals": { addr: "Huntsville, AL", map: "https://maps.google.com/?q=Huntsville+AL", meets: ["May 22–23 · Invite Only"] }
+        };
+
+        const WEEKS = [
+            {
+                wk: 10, dates: "Mar 2–8", month: "March 2026", days: [
+                    { d: "Mon 3/2", plan: "Practice", loc: "pr" },
+                    { d: "Tue 3/3", plan: "Long Run", loc: "off", locLabel: "Baptist Road Trailhead", locUrl: "https://maps.google.com/?q=Baptist+Road+Trailhead+Monument+CO" },
+                    { d: "Wed 3/4", plan: "Practice", loc: "pr" },
+                    { d: "Thu 3/5", plan: "Practice", loc: "off", locLabel: "Limbach Park", locUrl: "https://maps.google.com/?q=Limbach+Park+Monument+CO" },
+                    { d: "Fri 3/6", plan: "Practice", loc: "pr" },
+                    { d: "Sat 3/7", meet: "Wolfpack Invite", type: "meet", badge: "varsity" },
+                    { d: "Sun 3/8", plan: "Off", type: "off" }]
+            },
+            {
+                wk: 11, dates: "Mar 9–15", days: [
+                    { d: "Mon 3/9", plan: "Practice", loc: "pr" },
+                    { d: "Tue 3/10", plan: "Practice", loc: "pr" },
+                    { d: "Wed 3/11", meet: "RRMR JV", detail: "Practice at PR for non-racers", type: "meet", badge: "jv", loc: "pr" },
+                    { d: "Thu 3/12", meet: "Nike Indoor Nationals", detail: "Esther racing", type: "travel", badge: "varsity" },
+                    { d: "Fri 3/13", plan: "Practice", loc: "pr" },
+                    { d: "Sat 3/14", meet: "Nike Indoor Nationals", detail: "Jake, Ben, Axel, Lucas racing", type: "travel", badge: "varsity" },
+                    { d: "Sun 3/15", meet: "Nike Indoor Nationals", detail: "Jake, Ben, Axel, Lucas racing. Off for everyone else.", type: "travel", badge: "varsity" }]
+            },
+            {
+                wk: 12, dates: "Mar 16–22", days: [
+                    { d: "Mon 3/16", plan: "Practice", loc: "pr" },
+                    { d: "Tue 3/17", plan: "Practice", loc: "off", locLabel: "Palmer Lake", locUrl: "https://maps.google.com/?q=Palmer+Lake+CO" },
+                    { d: "Wed 3/18", meet: "PPAC JV #1", detail: "Practice at PR for non-racers", type: "meet", badge: "jv", loc: "pr" },
+                    { d: "Thu 3/19", loc: "off", locLabel: "Limbach Park", locUrl: "https://maps.google.com/?q=Limbach+Park+Monument+CO" },
+                    { d: "Fri 3/20", meet: "Chandler Rotary Invitational", detail: "AZ Travel Meet", type: "travel", badge: "varsity" },
+                    { d: "Sat 3/21", plan: "Practice (if staying home)", loc: "pr" },
+                    { d: "Sun 3/22", plan: "Off", type: "off" }]
+            },
+            {
+                wk: 13, dates: "Mar 23–29", days: [
+                    { d: "Mon 3/23", plan: "Practice", loc: "pr" },
+                    { d: "Tue 3/24", plan: "Practice", loc: "special", locLabel: "9 AM Sanctuary Point · 3:15 PM Palmer Ridge", locUrl: "https://maps.google.com/?q=Sanctuary+Rim+Trail+Monument+CO" },
+                    { d: "Wed 3/25", plan: "Practice", loc: "pr" },
+                    { d: "Thu 3/26", loc: "off", locLabel: "Limbach Park", locUrl: "https://maps.google.com/?q=Limbach+Park+Monument+CO" },
+                    { d: "Fri 3/27", meet: "Roosevelt Power Meet", type: "meet", badge: "varsity" },
+                    { d: "Sat 3/28", plan: "Practice (if not racing)", loc: "pr" },
+                    { d: "Sun 3/29", plan: "Off", type: "off" }]
+            },
+            {
+                wk: 14, dates: "Mar 30–Apr 5", month: "April 2026", days: [
+                    { d: "Mon 3/30", plan: "Practice", loc: "pr" },
+                    { d: "Tue 3/31", plan: "Practice", loc: "off", locLabel: "Palmer Lake", locUrl: "https://maps.google.com/?q=Palmer+Lake+CO" },
+                    { d: "Wed 4/1", plan: "Practice", loc: "pr" },
+                    { d: "Thu 4/2", meet: "Pikes Peak Athletic Conference Championship", detail: "V/JV — Big Meet", type: "meet", badge: "all" },
+                    { d: "Fri 4/3", plan: "Practice", loc: "pr" },
+                    { d: "Sat 4/4", plan: "Long Run", loc: "off", locLabel: "Baptist Road Trailhead", locUrl: "https://maps.google.com/?q=Baptist+Road+Trailhead+Monument+CO" },
+                    { d: "Sun 4/5", plan: "Off", type: "off" }]
+            },
+            {
+                wk: 15, dates: "Apr 6–12", days: [
+                    { d: "Mon 4/6", plan: "Practice", loc: "pr" },
+                    { d: "Tue 4/7", plan: "Practice", loc: "pr" },
+                    { d: "Wed 4/8", meet: "PPAC JV #2", detail: "Practice at PR for non-racers", type: "meet", badge: "jv", loc: "pr" },
+                    { d: "Thu 4/9", meet: "TCA Titan Invite", detail: "V/JV", type: "meet", badge: "all" },
+                    { d: "Fri 4/10", meet: "Arcadia Invitational", detail: "Practice at PR if not at Arcadia", type: "travel", badge: "varsity", loc: "pr" },
+                    { d: "Sat 4/11", plan: "Long Run (if not at Arcadia)", loc: "off", locLabel: "Woodman Park & Ride", locUrl: "https://maps.google.com/?q=Woodman+Park+and+Ride+Colorado+Springs+CO" },
+                    { d: "Sun 4/12", plan: "Off", type: "off" }]
+            },
+            {
+                wk: 16, dates: "Apr 13–19", days: [
+                    { d: "Mon 4/13", plan: "Practice", loc: "pr" },
+                    { d: "Tue 4/14", plan: "Practice", loc: "pr" },
+                    { d: "Wed 4/15", plan: "Practice", loc: "pr" },
+                    { d: "Thu 4/16", plan: "Practice", loc: "off", locLabel: "Limbach Park", locUrl: "https://maps.google.com/?q=Limbach+Park+Monument+CO" },
+                    { d: "Fri 4/17", plan: "Pre-Race", loc: "pr" },
+                    { d: "Sat 4/18", meet: "Randall Hess Roughrider", type: "meet", badge: "varsity" },
+                    { d: "Sun 4/19", plan: "Off", type: "off" }]
+            },
+            {
+                wk: 17, dates: "Apr 20–26", days: [
+                    { d: "Mon 4/20", plan: "Practice", loc: "pr" },
+                    { d: "Tue 4/21", plan: "Practice", loc: "pr" },
+                    { d: "Wed 4/22", meet: "RRMR JV Championship", detail: "Practice at PR for non-racers", type: "meet", badge: "jv", loc: "pr" },
+                    { d: "Thu 4/23", plan: "Practice", loc: "off", locLabel: "Limbach Park", locUrl: "https://maps.google.com/?q=Limbach+Park+Monument+CO" },
+                    { d: "Fri 4/24", plan: "Pre-Race", loc: "pr" },
+                    { d: "Sat 4/25", meet: "Stutler Twilight", type: "meet", badge: "varsity" },
+                    { d: "Sun 4/26", plan: "Off", type: "off" }]
+            },
+            {
+                wk: 18, dates: "Apr 27–May 3", month: "May 2026", days: [
+                    { d: "Mon 4/27", plan: "Practice", loc: "pr" },
+                    { d: "Tue 4/28", plan: "Practice", loc: "pr" },
+                    { d: "Wed 4/29", loc: "off", locLabel: "Baptist Road Trailhead", locUrl: "https://maps.google.com/?q=Baptist+Road+Trailhead+Monument+CO" },
+                    { d: "Thu 4/30", plan: "Practice", loc: "pr" },
+                    { d: "Fri 5/1", meet: "Pueblo Twilight", detail: "Pre-Race at Palmer Ridge Track", type: "meet", badge: "varsity" },
+                    { d: "Sat 5/2", meet: "Doherty Spartan Invite", type: "meet", badge: "varsity" },
+                    { d: "Sun 5/3", plan: "Off", type: "off" }]
+            },
+            {
+                wk: 19, dates: "May 4–10", days: [
+                    { d: "Mon 5/4", meet: "PPAC/LP JV Championship", detail: "Fast Strides + Foundation (V)", type: "meet", badge: "jv", loc: "pr" },
+                    { d: "Tue 5/5", loc: "off", locLabel: "Limbach Park", locUrl: "https://maps.google.com/?q=Limbach+Park+Monument+CO" },
+                    { d: "Wed 5/6", plan: "Practice", loc: "pr" },
+                    { d: "Thu 5/7", loc: "off", locLabel: "Palmer Lake", locUrl: "https://maps.google.com/?q=Palmer+Lake+CO" },
+                    { d: "Fri 5/8", plan: "Pre-Race", loc: "pr" },
+                    { d: "Sat 5/9", meet: "Teddy's Last Chance", detail: "If needed", type: "meet", badge: "varsity" },
+                    { d: "Sun 5/10", plan: "Off", type: "off" }]
+            },
+            {
+                wk: 20, dates: "May 11–17", days: [
+                    { d: "Mon 5/11", plan: "Practice", loc: "pr" },
+                    { d: "Tue 5/12", plan: "Practice", loc: "pr" },
+                    { d: "Wed 5/13", plan: "Shake-Out", loc: "pr" },
+                    { d: "Thu 5/14", meet: "CHSAA State: Day 1", detail: "4x800m Relay, 400m Prelims", type: "state", badge: "state" },
+                    { d: "Fri 5/15", meet: "CHSAA State: Day 2", detail: "3200m Final, 800m Final, 4x400m Prelims", type: "state", badge: "state" },
+                    { d: "Sat 5/16", meet: "CHSAA State: Day 3", detail: "1600m Final, 400m Final, 4x400m Final", type: "state", badge: "state" },
+                    { d: "Sun 5/17", plan: "Off", type: "off" }]
+            },
+            {
+                wk: 21, dates: "May 18–24", days: [
+                    { d: "Mon 5/18", plan: "Recovery", loc: "pr" },
+                    { d: "Tue 5/19", plan: "Pre-Meet Tuner", loc: "pr" },
+                    { d: "Wed 5/20", plan: "Travel" },
+                    { d: "Thu 5/21", plan: "Shakeout", loc: "off", locLabel: "Huntsville", locUrl: "https://maps.google.com/?q=Huntsville+AL" },
+                    { d: "Fri 5/22", meet: "Running Lane 3200m", detail: "Huntsville, AL", type: "travel", badge: "race" },
+                    { d: "Sat 5/23", meet: "Running Lane 1600m", detail: "Huntsville, AL", type: "travel", badge: "race" },
+                    { d: "Sun 5/24", plan: "Off", type: "off" }]
+            }
+        ];
+
+        const root = document.getElementById('calendar-root');
+        let curMonth = '';
+        WEEKS.forEach(w => {
+            if (w.month && w.month !== curMonth) {
+                curMonth = w.month;
+                root.innerHTML += `<div class="month-header"><i class="fas fa-calendar-alt"></i>${curMonth}</div>
+<div class="week-row header-row"><div class="day-header" style="background:var(--gold);color:var(--dark);">WK</div><div class="day-header">Mon</div><div class="day-header">Tue</div><div class="day-header">Wed</div><div class="day-header">Thu</div><div class="day-header">Fri</div><div class="day-header">Sat</div><div class="day-header">Sun</div></div>`;
+            }
+            let html = `<div class="week-row"><div class="week-num">${w.wk}</div>`;
+            w.days.forEach(day => {
+                let cls = 'day-cell';
+                if (day.type === 'meet') cls += ' meet';
+                else if (day.type === 'state') cls += ' state';
+                else if (day.type === 'travel') cls += ' travel';
+                else if (day.type === 'off') cls += ' off';
+                let content = `<div class="date">${day.d}</div>`;
+                if (day.badge) {
+                    let bc = day.badge === 'jv' ? 'jv' : day.badge === 'varsity' ? 'varsity' : day.badge === 'state' ? 'state-badge' : day.badge === 'race' ? 'race' : 'all-badge';
+                    let label = day.badge === 'jv' ? 'JV' : day.badge === 'varsity' ? 'Varsity' : day.badge === 'state' ? 'State' : day.badge === 'race' ? 'Race Day' : day.badge === 'all' ? 'V/JV' : 'All';
+                    content += `<span class="badge ${bc}">${label}</span> `;
+                }
+                if (day.meet) {
+                    let meetUrl = null;
+                    for (const [name, loc] of Object.entries(LOCATIONS)) {
+                        if (day.meet.includes(name) || name.includes(day.meet.split(':')[0].trim())) {
+                            meetUrl = loc.map; break;
+                        }
+                    }
+                    if (meetUrl) {
+                        content += `<a class="meet-name" href="${meetUrl}" target="_blank" rel="noopener">${day.meet} <i class="fas fa-map-marker-alt" style="font-size:.7em;opacity:.6"></i></a>`;
+                    } else {
+                        content += `<div class="meet-name">${day.meet}</div>`;
+                    }
+                }
+                if (day.detail) content += `<div class="day-plan">${day.detail}</div>`;
+                if (day.plan) content += `<div class="day-plan">${day.plan}</div>`;
+                if (day.loc) {
+                    let lc = day.loc === 'pr' ? 'loc-pr' : day.loc === 'special' ? 'loc-special' : 'loc-off';
+                    let icon = day.loc === 'pr' ? 'fa-school' : 'fa-map-marker-alt';
+                    let baseLbl = day.locLabel || (day.loc === 'pr' ? 'Palmer Ridge' : 'Off Campus');
+                    let time = day.loc === 'special' ? '' : day.loc === 'pr' ? ' · 3:05 PM' : ' · 3:30 PM';
+                    let label = baseLbl + time;
+                    let prUrl = 'https://maps.google.com/?q=Palmer+Ridge+High+School+19255+Monument+Hill+Rd+Monument+CO+80132';
+                    let url = day.locUrl || (day.loc === 'pr' ? prUrl : '');
+                    // Skip Palmer Ridge badge on normal practice days (it's the default)
+                    let skipPR = (day.loc === 'pr' && !day.meet);
+                    if (!skipPR) {
+                        if (url) {
+                            content += `<a class="loc-badge ${lc}" href="${url}" target="_blank" rel="noopener"><i class="fas ${icon}"></i> ${label}</a>`;
+                        } else {
+                            content += `<div class="loc-badge ${lc}"><i class="fas ${icon}"></i> ${label}</div>`;
+                        }
+                    }
+                }
+                html += `<div class="${cls}">${content}</div>`;
+            });
+            html += `</div>`;
+            root.innerHTML += html;
+        });
+
+        const lg = document.getElementById('locations-grid');
+        Object.entries(LOCATIONS).forEach(([name, loc]) => {
+            lg.innerHTML += `<a class="loc-card" href="${loc.map}" target="_blank" rel="noopener"><div class="pin"><i class="fas fa-map-pin"></i></div><div><h3>${name}</h3><p>${loc.addr}</p><div class="meets">${loc.meets.join(' | ')}</div></div></a>`;
+        });
+    </script>
+</body>
+
+</html>
